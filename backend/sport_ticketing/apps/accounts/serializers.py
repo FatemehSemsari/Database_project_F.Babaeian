@@ -1,5 +1,6 @@
 from rest_framework import serializers
-
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 class SignupOtpRequestSerializer(serializers.Serializer):
     email = serializers.EmailField(required=False, allow_blank=True, allow_null=True)
@@ -76,3 +77,50 @@ class UserResponseSerializer(serializers.Serializer):
     phone_verified = serializers.BooleanField()
     is_active = serializers.BooleanField()
     created_at = serializers.DateTimeField()
+
+def detect_identifier_type(identifier):
+    identifier = (identifier or "").strip().lower()
+
+    if not identifier:
+        raise serializers.ValidationError("Email or phone is required.")
+
+    if identifier.isdigit() and len(identifier) == 11 and identifier.startswith("09"):
+        return "phone", identifier
+
+    try:
+        validate_email(identifier)
+        return "email", identifier
+    except DjangoValidationError:
+        raise serializers.ValidationError(
+            "Identifier must be a valid email or phone number."
+        )
+
+
+class LoginOTPRequestSerializer(serializers.Serializer):
+    identifier = serializers.CharField(required=True)
+    password = serializers.CharField(write_only=True, min_length=8, max_length=128)
+
+    def validate_identifier(self, value):
+        _, normalized_identifier = detect_identifier_type(value)
+        return normalized_identifier
+
+class LoginSerializer(serializers.Serializer):
+    identifier = serializers.CharField(required=True)
+    otp_code = serializers.CharField(write_only=True, min_length=6, max_length=6)
+
+    def validate_identifier(self, value):
+        _, normalized_identifier = detect_identifier_type(value)
+        return normalized_identifier
+
+    def validate_otp_code(self, value):
+        value = value.strip()
+        if not value.isdigit():
+            raise serializers.ValidationError("OTP code must contain only digits.")
+        return value
+
+    def validate(self, attrs):
+        if not attrs.get("identifier"):
+            raise serializers.ValidationError("Email or phone is required.")
+        if not attrs.get("otp_code"):
+            raise serializers.ValidationError("OTP code is required.")
+        return attrs

@@ -51,3 +51,38 @@ def verify_signup_otp(email=None, phone=None, otp_code=None):
         return False, target_type
     redis_client.delete(key)
     return True, target_type
+
+
+def get_login_target(email=None, phone=None):
+    if phone:
+        return "phone", phone
+    return "email", email
+
+def build_login_otp_key(target_type, target_value):
+    return f"otp:login:{target_type}:{target_value}"
+
+def create_login_otp(email=None, phone=None):
+    target_type, target_value = get_login_target(email=email, phone=phone)
+    code = generate_otp_code()
+    key = build_login_otp_key(target_type, target_value)
+    redis_client.setex(
+        key,
+        getattr(settings, "OTP_TTL_SECONDS", 120),
+        code,
+    )
+    return {
+        "target_type": target_type,
+        "target_value": target_value,
+        "otp_code": code,
+    }
+
+def verify_login_otp(email=None, phone=None, otp_code=None):
+    target_type, target_value = get_login_target(email=email, phone=phone)
+    key = build_login_otp_key(target_type, target_value)
+    saved_code = redis_client.get(key)
+    if not saved_code:
+        return False, target_type
+    if saved_code != otp_code:
+        return False, target_type
+    redis_client.delete(key)
+    return True, target_type

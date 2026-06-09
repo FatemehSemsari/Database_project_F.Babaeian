@@ -53,3 +53,15 @@ class UserRepository:
         with connection.cursor() as cursor:
             cursor.execute(sql.GET_USER_BY_ID, [user_id])
             return dict_fetchone(cursor)
+
+    @staticmethod
+    def get_user_by_email(email):
+        with connection.cursor() as cursor:
+            cursor.execute(sql.GET_USER_BY_EMAIL, [email])
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def get_user_by_phone(phone):
+        with connection.cursor() as cursor:
+            cursor.execute(sql.GET_USER_BY_PHONE, [phone])
+            return dict_fetchone(cursor)

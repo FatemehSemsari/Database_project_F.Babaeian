@@ -53,3 +53,39 @@ FROM users
 WHERE id = %s
 LIMIT 1;
 """
+
+GET_USER_BY_EMAIL = """
+SELECT
+    id,
+    first_name,
+    last_name,
+    email,
+    phone,
+    email_verified,
+    phone_verified,
+    password_hash,
+    role,
+    is_active,
+    created_at
+FROM users
+WHERE email = %s
+LIMIT 1;
+"""
+
+GET_USER_BY_PHONE = """
+SELECT
+    id,
+    first_name,
+    last_name,
+    email,
+    phone,
+    role,
+    email_verified,
+    phone_verified,
+    password_hash,
+    is_active,
+    created_at
+FROM users
+WHERE phone = %s
+LIMIT 1;
+"""
