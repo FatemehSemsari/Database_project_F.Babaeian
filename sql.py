@@ -193,3 +193,221 @@ HAVING SUM(p.amount) > (
     FROM Payment
 );
 """
+
+#محاسبهٔ تعداد بلیط‌های فروخته‌شده به تفکیک رشتهٔ ورزشی
+SportTicket_TicketsSoldPerSportQuery = """
+SELECT s.name AS sport_name, COUNT(r.reservation_id) AS tickets_sold
+FROM Reservation r, Event e, Sport s
+WHERE r.event_id = e.event_id
+  AND e.sport_id = s.sport_id
+  AND r.status = 'active'
+GROUP BY s.sport_id, s.name;
+"""
+
+#نمایش کاربران با بیشترین تعداد خرید در یک بازهٔ زمانی مشخص
+SportTicket_TopBuyersInPeriodQuery = """
+SELECT u.first_name, u.last_name, COUNT(r.reservation_id) AS ticket_count
+FROM Users u, Reservation r
+WHERE u.user_id = r.user_id
+  AND r.created_at >= '2026-08-04 00:00:00'
+GROUP BY u.user_id, u.first_name, u.last_name
+ORDER BY ticket_count DESC;
+"""
+
+#محاسبهٔ آمار فروش بلیط در شهرهای استان تهران
+SportTicket_TehranProvinceSalesQuery = """
+SELECT v.city, COUNT(r.reservation_id) AS tickets_sold
+FROM Reservation r, Event e, Venue v
+WHERE r.event_id = e.event_id
+  AND e.venue_id = v.venue_id
+  AND v.province = 'تهران'
+  AND r.status = 'active'
+GROUP BY v.city;
+"""
+
+#نمایش شهرهای مسابقاتی که قدیمی‌ترین کاربر سامانه برای آن‌ها رزرو داشته است
+SportTicket_OldestUserVisitedCitiesQuery = """
+SELECT DISTINCT v.city
+FROM Reservation r, Event e, Venue v
+WHERE r.event_id = e.event_id
+  AND e.venue_id = v.venue_id
+  AND r.user_id = (
+      SELECT user_id
+      FROM Users
+      WHERE created_at = (
+          SELECT MIN(created_at)
+          FROM Users
+      )
+  );
+"""
+
+#نمایش فهرست اعضای تیم پشتیبانی سامانه
+SportTicket_SupportStaffListQuery = """
+SELECT first_name, last_name, email
+FROM Users
+WHERE role = 'support'
+ORDER BY last_name, first_name;
+"""
+
+#نمایش کاربران وفادار با حداقل دو خرید فعال
+SportTicket_LoyalUsersQuery = """
+SELECT u.first_name, u.last_name, COUNT(r.reservation_id) AS total_tickets
+FROM Users u, Reservation r
+WHERE u.user_id = r.user_id
+  AND r.status = 'active'
+GROUP BY u.user_id, u.first_name, u.last_name
+HAVING COUNT(r.reservation_id) >= 2;
+"""
+
+#نمایش کاربرانی که حداکثر دو بلیط فوتبال خریده‌اند
+SportTicket_UsersWithAtMostTwoFootballTicketsQuery = """
+SELECT u.first_name, u.last_name, COUNT(r.reservation_id) AS ticket_count
+FROM Users u, Reservation r, Event e, Sport s
+WHERE u.user_id = r.user_id
+  AND r.event_id = e.event_id
+  AND e.sport_id = s.sport_id
+  AND s.name = 'فوتبال'
+  AND r.status = 'active'
+GROUP BY u.user_id, u.first_name, u.last_name
+HAVING COUNT(r.reservation_id) <= 2;
+"""
+
+#نمایش کاربرانی که از تمام رشته‌های فوتبال، والیبال و بسکتبال بلیط خریده‌اند
+SportTicket_AllSportsBuyersQuery = """
+SELECT u.first_name, u.last_name
+FROM Users u, Reservation r, Event e, Sport s
+WHERE u.user_id = r.user_id
+  AND r.event_id = e.event_id
+  AND e.sport_id = s.sport_id
+  AND s.name IN ('فوتبال', 'والیبال', 'بسکتبال')
+  AND r.status = 'active'
+GROUP BY u.user_id, u.first_name, u.last_name
+HAVING COUNT(DISTINCT s.sport_id) = 3;
+"""
+
+#نمایش رزروهای ثبت‌شده در تاریخ مشخص
+SportTicket_TodayReservationsQuery = """
+SELECT reservation_id, user_id, event_id, created_at
+FROM Reservation
+WHERE created_at >= '2026-08-11 00:00:00'
+  AND created_at <= '2026-08-11 23:59:59'
+ORDER BY created_at ASC;
+"""
+
+#نمایش مسابقه یا مسابقات با دومین میزان فروش بلیط
+SportTicket_SecondBestSellingEventQuery = """
+SELECT event_id, COUNT(reservation_id) AS ticket_count
+FROM Reservation
+WHERE status = 'active'
+GROUP BY event_id
+HAVING COUNT(reservation_id) = (
+    SELECT MAX(sub.sales_count)
+    FROM (
+        SELECT COUNT(r2.reservation_id) AS sales_count
+        FROM Reservation r2
+        WHERE r2.status = 'active'
+        GROUP BY r2.event_id
+    ) sub
+    WHERE sub.sales_count < (
+        SELECT MAX(all_sales.sales_count)
+        FROM (
+            SELECT COUNT(r3.reservation_id) AS sales_count
+            FROM Reservation r3
+            WHERE r3.status = 'active'
+            GROUP BY r3.event_id
+        ) all_sales
+    )
+);
+"""
+
+#نمایش عضو پشتیبانی با بیشترین تعداد رزرو لغوشده
+SportTicket_SupportWithMostCancellationsQuery = """
+SELECT u.first_name, u.last_name, COUNT(r.reservation_id) AS cancellation_count
+FROM Users u, Reservation r
+WHERE u.user_id = r.user_id
+  AND u.role = 'support'
+  AND r.status = 'cancelled'
+GROUP BY u.user_id, u.first_name, u.last_name
+HAVING COUNT(r.reservation_id) = (
+    SELECT MAX(temp.cxl_count)
+    FROM (
+        SELECT COUNT(r2.reservation_id) AS cxl_count
+        FROM Users u2, Reservation r2
+        WHERE u2.user_id = r2.user_id
+          AND u2.role = 'support'
+          AND r2.status = 'cancelled'
+        GROUP BY u2.user_id
+    ) temp
+);
+"""
+
+#تغییر نام خانوادگی کاربر دارای بیشترین لغو رزرو به Reddington
+SportTicket_UpdateReddingtonLastNameQuery = """
+UPDATE Users
+SET last_name = 'Reddington'
+WHERE user_id = (
+    SELECT r.user_id
+    FROM Reservation r
+    WHERE r.status = 'cancelled'
+    GROUP BY r.user_id
+    HAVING COUNT(r.reservation_id) = (
+        SELECT MAX(temp.cxl_count)
+        FROM (
+            SELECT COUNT(r2.reservation_id) AS cxl_count
+            FROM Reservation r2
+            WHERE r2.status = 'cancelled'
+            GROUP BY r2.user_id
+        ) temp
+    )
+);
+"""
+
+#حذف رزروهای لغوشدهٔ کاربر با نام خانوادگی Reddington
+SportTicket_DeleteReddingtonCancelledReservationsQuery = """
+DELETE FROM Reservation
+WHERE status = 'cancelled'
+  AND user_id IN (
+      SELECT user_id
+      FROM Users
+      WHERE last_name = 'Reddington'
+  );
+"""
+
+#حذف تمام رزروهای لغوشده از سامانه
+SportTicket_DeleteAllCancelledReservationsQuery = """
+DELETE FROM Reservation
+WHERE status = 'cancelled';
+"""
+
+#اعمال ۱۰ درصد تخفیف برای مسابقات ورزشگاه آزادی در یک تاریخ مشخص
+SportTicket_AzadiStadiumDiscountQuery = """
+UPDATE Event
+SET ticket_price = ticket_price * 0.90
+WHERE venue_id IN (
+    SELECT venue_id
+    FROM Venue
+    WHERE name = 'ورزشگاه آزادی'
+)
+AND event_date >= '2026-08-10 00:00:00'
+AND event_date <= '2026-08-10 23:59:59';
+"""
+
+#نمایش موضوع و تعداد گزارش‌ها برای مسابقه‌ای با بیشترین گزارش
+SportTicket_MostReportedEventSubjectsQuery = """
+SELECT rep.subject, COUNT(rep.report_id) AS report_count
+FROM Report rep
+WHERE rep.event_id = (
+    SELECT r.event_id
+    FROM Report r
+    GROUP BY r.event_id
+    HAVING COUNT(r.report_id) = (
+        SELECT MAX(temp.rep_count)
+        FROM (
+            SELECT COUNT(r2.report_id) AS rep_count
+            FROM Report r2
+            GROUP BY r2.event_id
+        ) temp
+    )
+)
+GROUP BY rep.subject;
+"""
