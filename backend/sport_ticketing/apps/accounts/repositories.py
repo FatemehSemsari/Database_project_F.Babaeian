@@ -65,3 +65,61 @@ class UserRepository:
         with connection.cursor() as cursor:
             cursor.execute(sql.GET_USER_BY_PHONE, [phone])
             return dict_fetchone(cursor)
+
+    @staticmethod
+    def update_profile(user_id,first_name=None,last_name=None):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.UPDATE_USER_PROFILE,
+                [
+                    first_name,
+                    last_name,
+                    user_id,
+                ],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def get_user_auth_by_id(user_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.GET_USER_AUTH_BY_ID,
+                [user_id],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def update_email(user_id, new_email):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.UPDATE_USER_EMAIL,
+                [
+                    new_email,
+                    user_id,
+                ],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def update_phone(user_id, new_phone):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.UPDATE_USER_PHONE,
+                [
+                    new_phone,
+                    user_id,
+                ],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def update_password(user_id, new_password_hash):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.UPDATE_USER_PASSWORD,
+                [
+                    new_password_hash,
+                    user_id,
+                ],
+            )
+            return cursor.fetchone() is not None

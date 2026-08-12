@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     "apps.accounts.apps.AccountsConfig",
+    "apps.catalog.apps.CatalogConfig",
+    "apps.tickets.apps.TicketsConfig",
 ]
 
 MIDDLEWARE = [
@@ -136,3 +138,7 @@ REDIS_PORT = 6379
 REDIS_DB = 0
 
 OTP_TTL_SECONDS = 120
+OTP_RESEND_COOLDOWN_SECONDS = 60
+OTP_MAX_ATTEMPTS = 5
+PROFILE_CACHE_TTL_SECONDS = 300
+TICKET_SEARCH_CACHE_TTL_SECONDS = 30
