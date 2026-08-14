@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "apps.tickets.apps.TicketsConfig",
     "apps.reservations.apps.ReservationsConfig",
     "apps.payments.apps.PaymentsConfig",
+    "apps.reports.apps.ReportsConfig",
+    "apps.support.apps.SupportConfig",
 ]
 
 MIDDLEWARE = [
