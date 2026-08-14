@@ -192,3 +192,130 @@ class TicketRepository:
                 ],
             )
             return dict_fetchone(cursor)
+
+    #-------------------------------------------------------
+
+    @staticmethod
+    def get_user_bookings(user_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.GET_USER_BOOKINGS,
+                [user_id],
+            )
+
+            return dict_fetchall(cursor)
+
+    @staticmethod
+    def get_ticket_cancellation_info(ticket_id, user_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.GET_TICKET_CANCELLATION_INFO,
+                [
+                    ticket_id,
+                    user_id,
+                ],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def get_ticket_for_cancellation(
+            ticket_id,
+            user_id,
+    ):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.GET_TICKET_FOR_CANCELLATION,
+                [
+                    ticket_id,
+                    user_id,
+                ],
+            )
+
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def get_cancellation_rule(event_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.GET_CANCELLATION_RULE,
+                [event_id],
+            )
+
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def get_successful_payment_for_update(reservation_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.GET_SUCCESSFUL_PAYMENT_FOR_UPDATE,
+                [reservation_id],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def ensure_user_wallet(user_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.ENSURE_USER_WALLET,
+                [user_id],
+            )
+
+    @staticmethod
+    def get_user_wallet_for_update(user_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.GET_USER_WALLET_FOR_UPDATE,
+                [user_id],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def credit_wallet(wallet_id, amount):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.CREDIT_WALLET,
+                [
+                    amount,
+                    wallet_id,
+                ],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def cancel_ticket(ticket_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.CANCEL_TICKET,
+                [ticket_id],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def release_cancelled_inventory(inventory_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.RELEASE_CANCELLED_TICKET_INVENTORY,
+                [inventory_id],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def cancel_reservation(reservation_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.CANCEL_RESERVATION,
+                [reservation_id],
+            )
+            return dict_fetchone(cursor)
+
+    @staticmethod
+    def mark_payment_as_refunded(payment_id, refund_amount):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.MARK_PAYMENT_AS_REFUNDED,
+                [
+                    refund_amount,
+                    payment_id,
+                ],
+            )
+            return dict_fetchone(cursor)
