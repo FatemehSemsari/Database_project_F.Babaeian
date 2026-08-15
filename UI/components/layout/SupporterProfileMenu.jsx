@@ -1,7 +1,7 @@
 import Link from "next/link"
 
 
-export default function UserProfileMenu(){
+export default function SupporterProfileMenu(){
 
 
     const getUser =async ()=> {
@@ -34,10 +34,9 @@ export default function UserProfileMenu(){
             </div>
              <div className=" w-full bg-amber-50 h-0.25 opacity-30 m-auto mt-5"></div>
             <div className=" flex flex-col gap-3 mt-5 items-end">
-                <Link href={"/profile/user/"}>ویرایش اطلاعات کاربر</Link>
-                <Link href={"/profile/user/Reserves"}>رزروهای من</Link>
-                <Link href={"/profile/user/Reports"} >گزارش های من</Link>
-                <Link href={"/profile/user/SendReport"} >ثبت گزارش جدید</Link>
+                <Link href={"/profile/supporter/"}>گزارش های ثبت شده</Link>
+                <Link href={"/profile/supporter/tickets"}> مدیریت بلیط ها</Link>
+
             </div>
         </div>
     )

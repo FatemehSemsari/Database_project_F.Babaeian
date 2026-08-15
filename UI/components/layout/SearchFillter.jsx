@@ -13,7 +13,7 @@ export default function SearchFillter({searchHandler}){
 
     return(
         <div>
-            <div className=" h-25 bg-blue-950 text-white  mt-25 flex flex-wrap flex-row-reverse justify-around p-2 items-center rounded-xl">
+            <div className=" h-25 bg-[#10243D] text-white  mt-25 flex flex-wrap flex-row-reverse justify-around p-2 items-center rounded-xl">
             <select ref={sportRef}>
                {
                 mockFilters.teams.map((teams) =>{

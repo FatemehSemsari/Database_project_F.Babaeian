@@ -69,7 +69,7 @@ export default function Matches(){
     }
 
     return(
-        <div className=" min-h-screen m-auto w-11/12">
+        <div className="min-h-screen m-auto w-11/12">
             <SearchFillter></SearchFillter>
             <div className="mt-5 w-full flex flex-wrap justify-center items-center">
                 {groupEvent.map((eventTicket) => {

@@ -4,7 +4,7 @@ import img from "../../public/4.jpg"
 
 export default function MatchCard({sport_name, eventTicket, clickHandler, venue_name, home_team_logo, home_team_name, away_team_name,away_team_logo, event_date_time, price}){
     return(
-        <div className=" shadow-2xl bg-indigo-100 w-3/12 rounded-xl h-auto p-5 m-5">
+        <div className=" shadow-2xl bg-white w-3/12 rounded-xl h-auto p-5 m-5">
             
             <div className="">
                 <div className=" m-2 flex font-bold justify-around items-center ">

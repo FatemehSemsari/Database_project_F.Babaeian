@@ -20,7 +20,7 @@ export default function Navbar() {
     const [modal, setModal]= useState(false)
   return (
   <div>
-       <nav className= "bg-[#07111F]  z-50 fixed top-0 rounded-lg rad items-center justify-between flex w-full m-auto  p-2">
+       <nav className= "bg-[#10243D]  z-50 fixed top-0 rounded-lg rad items-center justify-between flex w-full m-auto  p-2">
         <div className="flex m-auto justify-between gap-3 items-center">
             <LogButton showModal={showModal}/>
             <NottifButton/>

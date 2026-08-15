@@ -40,7 +40,7 @@ export default function Match(){
             const res = await fetch(
                 "",
                {
-                 method: "POST",
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     // Authorization: `Bearer ${token}`
