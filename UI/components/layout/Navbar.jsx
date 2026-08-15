@@ -1,11 +1,28 @@
+"use client";
+
+import Modal from "./Modal";
 import Link from "next/link";
 import LogButton from "../ui/Buttons/LogButton";
 import NottifButton from "../ui/Buttons/NottifButton";
+import { useState } from "react";
+
 export default function Navbar() {
+
+    const showModal = ()=>{
+        setModal(true)
+    }
+
+    const closeModal = ()=>{
+        setModal(false)
+    }
+
+
+    const [modal, setModal]= useState(false)
   return (
-     <nav className= "bg-[#07111F]  z-50 fixed top-0 rounded-lg rad items-center justify-between flex w-full m-auto  p-2">
+  <div>
+       <nav className= "bg-[#07111F]  z-50 fixed top-0 rounded-lg rad items-center justify-between flex w-full m-auto  p-2">
         <div className="flex m-auto justify-between gap-3 items-center">
-            <LogButton/>
+            <LogButton showModal={showModal}/>
             <NottifButton/>
         </div>
         <div className="flex text-lg text-amber-50 border-blue-300 m-auto gap-5 justify-center items-center">
@@ -22,6 +39,9 @@ export default function Navbar() {
                 </g>
             </svg>
         </div>
+        
     </nav>
+    <Modal modal={modal} closeModal={closeModal} showModal={showModal} />
+  </div>
   );
 }
