@@ -3,14 +3,29 @@ from rest_framework.decorators import (
     api_view,
     permission_classes,
 )
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from apps.tickets.serializers import (
     TicketSearchQuerySerializer,
     TicketSearchResultSerializer,
     TicketDetailSerializer,
+    UserBookingSerializer,
+    CancellationInfoSerializer,
+    CancelTicketResponseSerializer
 )
 from apps.tickets.services import TicketService
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+)
+from apps.accounts.authentication import (
+    JWTAuthentication,
+)
+
 
 
 @api_view(["GET"])
@@ -78,6 +93,93 @@ def ticket_details(request, ticket_category_id):
             "success": True,
             "message": (
                 "Ticket details retrieved successfully."
+            ),
+            "data": response_serializer.data,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def my_bookings(request):
+    bookings = TicketService.get_user_bookings(user_id=request.user.id)
+    upcoming_serializer = UserBookingSerializer(bookings["upcoming"], many=True)
+    cancelled_serializer = UserBookingSerializer(bookings["cancelled"], many=True)
+    used_serializer = UserBookingSerializer(bookings["used"], many=True)
+    past_serializer = UserBookingSerializer(bookings["past"], many=True)
+    return Response(
+        {
+            "success": True,
+            "message": (
+                "User bookings retrieved successfully."
+            ),
+            "data": {
+                "upcoming": upcoming_serializer.data,
+                "cancelled": cancelled_serializer.data,
+                "used": used_serializer.data,
+                "past": past_serializer.data,
+
+                "counts": {
+                    "upcoming": len(
+                        upcoming_serializer.data
+                    ),
+                    "cancelled": len(
+                        cancelled_serializer.data
+                    ),
+                    "used": len(
+                        used_serializer.data
+                    ),
+                    "past": len(
+                        past_serializer.data
+                    ),
+                },
+                "total_count": (
+                    len(upcoming_serializer.data)
+                    + len(cancelled_serializer.data)
+                    + len(used_serializer.data)
+                    + len(past_serializer.data)
+                ),
+            },
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+
+@api_view(["GET"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def cancellation_info(request, ticket_id):
+    result = TicketService.get_cancellation_info(ticket_id=ticket_id, user_id=request.user.id)
+    response_serializer = CancellationInfoSerializer(result)
+    return Response(
+        {
+            "success": True,
+            "message": (
+                "Cancellation information "
+                "retrieved successfully."
+            ),
+            "data": response_serializer.data,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+
+@api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def cancel_ticket(request, ticket_id):
+    result = TicketService.cancel_user_ticket(ticket_id=ticket_id, user_id=request.user.id)
+    response_serializer = CancelTicketResponseSerializer(result)
+    return Response(
+        {
+            "success": True,
+            "message": (
+                "Ticket cancelled and refund "
+                "processed successfully."
             ),
             "data": response_serializer.data,
         },

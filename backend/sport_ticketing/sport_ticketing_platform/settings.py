@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     "apps.accounts.apps.AccountsConfig",
     "apps.catalog.apps.CatalogConfig",
     "apps.tickets.apps.TicketsConfig",
+    "apps.reservations.apps.ReservationsConfig",
+    "apps.payments.apps.PaymentsConfig",
+    "apps.reports.apps.ReportsConfig",
+    "apps.support.apps.SupportConfig",
 ]
 
 MIDDLEWARE = [
@@ -142,3 +146,5 @@ OTP_RESEND_COOLDOWN_SECONDS = 60
 OTP_MAX_ATTEMPTS = 5
 PROFILE_CACHE_TTL_SECONDS = 300
 TICKET_SEARCH_CACHE_TTL_SECONDS = 30
+
+RESERVATION_TTL_MINUTES = 10
