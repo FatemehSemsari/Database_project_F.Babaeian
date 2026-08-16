@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-   <div className="bg-white w-full h-4/12 text-right flex items-start justify-around m-auto p-5">
+   <div className="bg-white w-full h-4/12 text-right flex items-start justify-around m-auto p-5 mt-8">
       <ul className="">
         <li className="pl-3 text-right font-bold"> ما را دنبال کنید</li>
         <div >

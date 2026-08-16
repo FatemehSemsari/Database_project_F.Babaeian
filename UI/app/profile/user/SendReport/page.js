@@ -39,11 +39,11 @@ export default function SendPage(){
     }
 
     return(
-        <div className="flex flex-col gap-3 items-end flex-wrap mt-25 p-5 w-7/12">
-            <h1 className=" w-fit border-b-2 mb-5"> ثبت گزارش جدید</h1>
-            <div className="flex flex-row-reverse flex-wrap gap-3">
-                <input ref={ticketRef}  placeholder="شماره بلیط"></input>
-            <input ref={reserveRef}  placeholder="کد رزرو"></input>
+        <div className="shadow-2xl bg-white rounded-xl flex flex-col gap-5 items-end justify-between flex-wrap mt-25 p-5 w-7/12">
+            <h1 className=" w-fit border-b-2 p-1 mb-5"> ثبت گزارش جدید</h1>
+            <div className="flex flex-row-reverse flex-wrap gap-5 justify-between items-center">
+                <input ref={ticketRef} className="p-1  border-b-2"  placeholder="شماره بلیط"></input>
+            <input className=" p-1 border-b-2 w-auto" ref={reserveRef}  placeholder="کد رزرو"></input>
             <select ref={issueRef}>
                 <option value={"purchase_problem"}>مشکل خرید</option>
                 <option value={"payment_problem"}>مشکل پرداخت</option>
@@ -57,8 +57,8 @@ export default function SendPage(){
             </select>
             
             </div>
-            <input className="h-30 w-10/12" type="text" ref={messageRef}  placeholder="توضیحات"></input>
-            <button onClick={sendReport}>ثبت گزارش</button>
+            <input className=" p-1 border-2 rounded-xl h-30 w-10/12" type="text" ref={messageRef}  placeholder="توضیحات"></input>
+            <button className="bg-[#10243D] text-white p-3 rounded-xl" onClick={sendReport}>ثبت گزارش</button>
         </div>
     )
 }
