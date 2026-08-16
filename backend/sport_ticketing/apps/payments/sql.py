@@ -168,5 +168,49 @@ RETURNING
     issuedate AS issue_date;
 """
 
+ENSURE_USER_WALLET = """
+INSERT INTO wallet (
+    user_id,
+    balance
+)
+VALUES (
+    %s,
+    0
+)
+ON CONFLICT (user_id)
+DO NOTHING;
+"""
 
+
+GET_USER_WALLET_FOR_UPDATE = """
+SELECT
+    wallet_id,
+    user_id,
+    balance
+
+FROM wallet
+
+WHERE user_id = %s
+
+FOR UPDATE;
+"""
+
+
+DEBIT_USER_WALLET = """
+UPDATE wallet
+
+SET
+    balance = balance - %s,
+    updated_at = NOW()
+
+WHERE
+    wallet_id = %s
+    AND balance >= %s
+
+RETURNING
+    wallet_id,
+    user_id,
+    balance AS wallet_balance,
+    updated_at;
+"""
 

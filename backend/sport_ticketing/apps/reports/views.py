@@ -14,17 +14,51 @@ from apps.accounts.authentication import (
 from apps.reports.serializers import (
     CreateReportSerializer,
     ReportResponseSerializer,
+    UserReportSerializer
 )
 from apps.reports.services import (
     ReportService,
 )
 
 
-@api_view(["POST"])
+@api_view(["GET", "POST"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def create_report(request):
-    serializer = CreateReportSerializer(data=request.data)
+    # GET - LIST CURRENT USER REPORTS
+    if request.method == "GET":
+        reports = (
+            ReportService
+            .get_user_reports(
+                user_id=request.user.id
+            )
+        )
+        response_serializer = (
+            UserReportSerializer(
+                reports,
+                many=True,
+            )
+        )
+        return Response(
+            {
+                "success": True,
+                "data": {
+                    "reports": (
+                        response_serializer.data
+                    ),
+                    "count": len(
+                        response_serializer.data
+                    ),
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+    # POST - CREATE REPORT
+    serializer = CreateReportSerializer(
+        data=request.data
+    )
     if not serializer.is_valid():
         return Response(
             {
@@ -39,7 +73,11 @@ def create_report(request):
             serializer.validated_data
         ),
     )
-    response_serializer = ReportResponseSerializer(report)
+    response_serializer = (
+        ReportResponseSerializer(
+            report
+        )
+    )
     return Response(
         {
             "success": True,

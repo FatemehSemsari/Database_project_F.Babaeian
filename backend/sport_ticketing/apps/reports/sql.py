@@ -68,3 +68,23 @@ RETURNING
 """
 
 
+LIST_USER_REPORTS = """
+SELECT
+    rp.reportid AS report_id,
+    rp.user_id,
+    rp.tid AS ticket_id,
+    rp.reservation_id,
+    rp.subject AS issue_type,
+    rp.message,
+    rp.status,
+    rp.support_response,
+    rp.reviewed_at
+
+FROM report AS rp
+
+WHERE
+    rp.user_id = %s
+
+ORDER BY
+    rp.reportid DESC;
+"""

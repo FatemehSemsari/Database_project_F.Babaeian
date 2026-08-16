@@ -67,6 +67,42 @@ class PaymentRepository:
                 [reservation_id],
             )
 
+
+
+    @staticmethod
+    def ensure_user_wallet(user_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.ENSURE_USER_WALLET,
+                [user_id],
+            )
+
+
+    @staticmethod
+    def get_user_wallet_for_update(user_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.GET_USER_WALLET_FOR_UPDATE,
+                [user_id],
+            )
+            return dict_fetchone(cursor)
+
+
+    @staticmethod
+    def debit_user_wallet(wallet_id, amount):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.DEBIT_USER_WALLET,
+                [
+                    amount,
+                    wallet_id,
+                    amount,
+                ],
+            )
+            return dict_fetchone(cursor)
+
+
+
     @staticmethod
     def create_successful_payment(reservation_id, amount, method, transaction_ref):
         with connection.cursor() as cursor:
