@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 es = Elasticsearch(
-    "http://localhost:9200"
+    "http://localhost:9270"
 )
 
 INDEX_NAME = "tickets_search"

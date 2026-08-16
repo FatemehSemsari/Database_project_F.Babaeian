@@ -49,6 +49,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -87,7 +91,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "sport_ticketing_dev",
         "USER": "postgres",
-        "PASSWORD": "fatemeh1383",
+        "PASSWORD": "Fatemeh1383",
         "HOST": "localhost",
         "PORT": "5432",
     }
@@ -155,3 +159,8 @@ PROFILE_CACHE_TTL_SECONDS = 300
 TICKET_SEARCH_CACHE_TTL_SECONDS = 30
 
 RESERVATION_TTL_MINUTES = 10
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
