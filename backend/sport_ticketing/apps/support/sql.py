@@ -289,38 +289,75 @@ OFFSET %s;
 
 
 UPDATE_SUPPORT_REPORT = """
-UPDATE report
+WITH updated_report AS (
+    UPDATE report
 
-SET
-    status = COALESCE(
-        %s,
-        status
-    ),
+    SET
+        status = COALESCE(
+            %s,
+            status
+        ),
 
-    support_response = COALESCE(
-        %s,
-        support_response
-    ),
+        support_response = COALESCE(
+            %s,
+            support_response
+        ),
 
-    reviewed_by = %s,
+        reviewed_by = %s,
 
-    reviewed_at = NOW()
+        reviewed_at = NOW()
 
-WHERE reportid = %s
+    WHERE reportid = %s
 
-RETURNING
-    reportid AS report_id,
-    user_id,
-    tid AS ticket_id,
-    reservation_id,
-    subject AS issue_type,
-    message,
-    status,
-    support_response,
-    reviewed_by,
-    reviewed_at;
+    RETURNING
+        reportid,
+        user_id,
+        tid,
+        reservation_id,
+        subject,
+        message,
+        status,
+        support_response,
+        reviewed_by,
+        reviewed_at
+)
+
+SELECT
+    ur.reportid AS report_id,
+
+    ur.user_id,
+
+    u.first_name,
+    u.last_name,
+    u.email,
+    u.phone,
+
+    ur.tid AS ticket_id,
+    ur.reservation_id,
+
+    ur.subject AS issue_type,
+    ur.message,
+
+    ur.status,
+    ur.support_response,
+
+    ur.reviewed_by,
+    ur.reviewed_at,
+
+    reviewer.first_name
+        AS reviewer_first_name,
+
+    reviewer.last_name
+        AS reviewer_last_name
+
+FROM updated_report AS ur
+
+INNER JOIN users AS u
+    ON u.id = ur.user_id
+
+LEFT JOIN users AS reviewer
+    ON reviewer.id = ur.reviewed_by;
 """
-
 
 LIST_SUPPORT_RESERVATIONS = """
 SELECT

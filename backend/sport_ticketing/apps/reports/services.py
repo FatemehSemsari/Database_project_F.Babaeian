@@ -55,3 +55,12 @@ class ReportService:
                 )
             )
         return report
+
+    @staticmethod
+    def get_user_reports(user_id):
+        return (
+            ReportRepository
+            .list_user_reports(
+                user_id=user_id
+            )
+        )

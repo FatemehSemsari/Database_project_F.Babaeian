@@ -263,3 +263,93 @@ class CancelTicketResponseSerializer(serializers.Serializer):
     refunded_at = serializers.DateTimeField()
 
 
+class AdvancedTicketSearchQuerySerializer(serializers.Serializer):
+    keyword = serializers.CharField(
+        required=False,
+        allow_blank=False,
+        max_length=200,
+    )
+    sport_id = serializers.IntegerField(
+        required=False,
+        min_value=1,
+    )
+    team_id = serializers.IntegerField(
+        required=False,
+        min_value=1,
+    )
+    city_id = serializers.IntegerField(
+        required=False,
+        min_value=1,
+    )
+    venue_id = serializers.IntegerField(
+        required=False,
+        min_value=1,
+    )
+    ticket_category_id = (
+        serializers.IntegerField(
+            required=False,
+            min_value=1,
+        )
+    )
+    date_from = serializers.DateField(
+        required=False,
+    )
+    date_to = serializers.DateField(
+        required=False,
+    )
+    min_price = serializers.IntegerField(
+        required=False,
+        min_value=0,
+    )
+    max_price = serializers.IntegerField(
+        required=False,
+        min_value=0,
+    )
+    limit = serializers.IntegerField(
+        required=False,
+        default=20,
+        min_value=1,
+        max_value=100,
+    )
+    offset = serializers.IntegerField(
+        required=False,
+        default=0,
+        min_value=0,
+    )
+
+    def validate(self, attrs):
+        date_from = attrs.get(
+            "date_from"
+        )
+        date_to = attrs.get(
+            "date_to"
+        )
+        if (
+            date_from is not None
+            and date_to is not None
+            and date_from > date_to
+        ):
+            raise serializers.ValidationError({
+                "date_to": (
+                    "date_to must be greater "
+                    "than or equal to date_from."
+                )
+            })
+        min_price = attrs.get(
+            "min_price"
+        )
+        max_price = attrs.get(
+            "max_price"
+        )
+        if (
+            min_price is not None
+            and max_price is not None
+            and min_price > max_price
+        ):
+            raise serializers.ValidationError({
+                "max_price": (
+                    "max_price must be greater "
+                    "than or equal to min_price."
+                )
+            })
+        return attrs

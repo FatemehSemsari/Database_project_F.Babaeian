@@ -10,6 +10,9 @@ from apps.payments.repositories import (
 from apps.tickets.search_cache import (
     invalidate_ticket_search_cache,
 )
+from apps.tickets.elastic_sync import (
+    safe_sync_by_reservation,
+)
 
 
 class PaymentConflict(APIException):
@@ -57,6 +60,12 @@ class PaymentService:
                     )
                 )
                 transaction.on_commit(
+                    lambda rid=reservation_id:
+                    safe_sync_by_reservation(
+                        rid
+                    )
+                )
+                transaction.on_commit(
                     invalidate_ticket_search_cache
                 )
                 expired = True
@@ -75,17 +84,53 @@ class PaymentService:
                             "One or more reserved seats "
                             "are no longer available."
                         )
+                total_amount = int(
+                    reservation["total_amount"]
+                )
+                if method == "wallet":
+                    PaymentRepository.ensure_user_wallet(
+                        user_id
+                    )
+                    wallet = (
+                        PaymentRepository
+                        .get_user_wallet_for_update(
+                            user_id
+                        )
+                    )
+                    if wallet is None:
+                        raise PaymentConflict(
+                            "User wallet could "
+                            "not be found."
+                        )
+                    wallet_balance = int(
+                        wallet["balance"]
+                    )
+                    if wallet_balance < total_amount:
+                        raise PaymentConflict(
+                            "Insufficient wallet "
+                            "balance."
+                        )
+                    wallet_result = (
+                        PaymentRepository
+                        .debit_user_wallet(
+                            wallet_id=(
+                                wallet["wallet_id"]
+                            ),
+                            amount=total_amount,
+                        )
+                    )
+                    if wallet_result is None:
+                        raise PaymentConflict(
+                            "Wallet payment could "
+                            "not be completed."
+                        )
                 payment = (
                     PaymentRepository
                     .create_successful_payment(
                         reservation_id=(
                             reservation_id
                         ),
-                        amount=(
-                            reservation[
-                                "total_amount"
-                            ]
-                        ),
+                        amount=total_amount,
                         method=method,
                         transaction_ref=(
                             transaction_ref

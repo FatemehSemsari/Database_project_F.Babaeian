@@ -438,3 +438,16 @@ WHERE
 ORDER BY
     r.reserved_at DESC;
 """
+
+
+CREATE_RESERVATION_SEAT = """
+INSERT INTO reservation_seat (
+    reservation_id,
+    inventory_id
+)
+VALUES (
+    %s,
+    %s
+)
+RETURNING reservation_id, inventory_id;
+"""

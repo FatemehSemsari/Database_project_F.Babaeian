@@ -43,3 +43,24 @@ class ReportResponseSerializer(serializers.Serializer):
     issue_type = serializers.CharField()
     message = serializers.CharField()
     status = serializers.CharField()
+
+
+class UserReportSerializer(serializers.Serializer):
+    report_id = serializers.IntegerField()
+    user_id = serializers.IntegerField()
+    ticket_id = serializers.IntegerField(
+        allow_null=True
+    )
+    reservation_id = serializers.IntegerField(
+        allow_null=True
+    )
+    issue_type = serializers.CharField()
+    message = serializers.CharField()
+    status = serializers.CharField()
+    support_response = serializers.CharField(
+        allow_null=True,
+        allow_blank=True,
+    )
+    reviewed_at = serializers.DateTimeField(
+        allow_null=True
+    )

@@ -1,5 +1,4 @@
 from django.db import transaction
-
 from django.utils import timezone
 
 from rest_framework.exceptions import (
@@ -13,6 +12,9 @@ from apps.support.repositories import (
 
 from apps.tickets.search_cache import (
     invalidate_ticket_search_cache,
+)
+from apps.tickets.elastic_sync import (
+    safe_sync_by_reservation,
 )
 
 
@@ -35,7 +37,6 @@ class SupportService:
             )
         )
 
-
     @staticmethod
     def get_suspicious_payments(
         validated_filters,
@@ -47,7 +48,6 @@ class SupportService:
                 offset=validated_filters["offset"],
             )
         )
-
 
     @staticmethod
     def get_reports(
@@ -63,7 +63,6 @@ class SupportService:
             limit=validated_filters["limit"],
             offset=validated_filters["offset"],
         )
-
 
     @staticmethod
     def update_report(
@@ -97,7 +96,6 @@ class SupportService:
             )
 
         return report
-
 
     @staticmethod
     def get_reservations(
@@ -150,6 +148,44 @@ class SupportService:
                     "Reservation not found."
                 )
 
+
+
+            reserved_at = reservation.get(
+                "reserved_at"
+            )
+
+            expires_at = reservation.get(
+                "expires_at"
+            )
+
+
+
+            if (
+                reserved_at is not None
+                and timezone.is_naive(
+                    reserved_at
+                )
+            ):
+                reserved_at = (
+                    timezone.make_aware(
+                        reserved_at,
+                        timezone.get_current_timezone(),
+                    )
+                )
+
+            if (
+                expires_at is not None
+                and timezone.is_naive(
+                    expires_at
+                )
+            ):
+                expires_at = (
+                    timezone.make_aware(
+                        expires_at,
+                        timezone.get_current_timezone(),
+                    )
+                )
+
             current_status = (
                 reservation[
                     "reservation_status"
@@ -168,13 +204,10 @@ class SupportService:
                         "can be approved by support."
                     )
 
-                expires_at = (
-                    reservation["expires_at"]
-                )
-
                 if (
                     expires_at is not None
-                    and expires_at <= timezone.now()
+                    and expires_at
+                    <= timezone.now()
                 ):
                     raise SupportConflict(
                         "Expired reservation "
@@ -214,6 +247,17 @@ class SupportService:
                     ]
                 )
 
+
+                if timezone.is_naive(
+                    new_expires_at
+                ):
+                    new_expires_at = (
+                        timezone.make_aware(
+                            new_expires_at,
+                            timezone.get_current_timezone(),
+                        )
+                    )
+
                 if (
                     new_expires_at
                     <= timezone.now()
@@ -224,8 +268,9 @@ class SupportService:
                     )
 
                 if (
-                    new_expires_at
-                    < reservation["reserved_at"]
+                    reserved_at is not None
+                    and new_expires_at
+                    < reserved_at
                 ):
                     raise SupportConflict(
                         "Expiration time cannot "
@@ -301,6 +346,12 @@ class SupportService:
                     SupportRepository
                     .release_cancelled_reservation(
                         reservation_id
+                    )
+                )
+                transaction.on_commit(
+                    lambda rid=reservation_id:
+                    safe_sync_by_reservation(
+                        rid
                     )
                 )
 

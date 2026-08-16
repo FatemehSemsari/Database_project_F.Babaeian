@@ -13,6 +13,18 @@ def dict_fetchone(cursor):
     return dict(zip(columns, row))
 
 
+def dict_fetchall(cursor):
+    columns = [
+        column[0]
+        for column in cursor.description
+    ]
+
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
+
+
 class ReportRepository:
     @staticmethod
     def get_user_ticket(ticket_id, user_id):
@@ -52,3 +64,13 @@ class ReportRepository:
                 ],
             )
             return dict_fetchone(cursor)
+
+    @staticmethod
+    def list_user_reports(user_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql.LIST_USER_REPORTS,
+                [user_id],
+            )
+
+            return dict_fetchall(cursor)
