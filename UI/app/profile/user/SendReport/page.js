@@ -26,6 +26,7 @@ export default function SendPage(){
                 body: JSON.stringify({
                     ticket_id: ticketRef.current.value,
                     reservation_id: reserveRef.current.value,
+                    issue_type: issueRef.current.value,
                     message: issueRef.current.value
                 })
                }
@@ -35,6 +36,8 @@ export default function SendPage(){
             console.log(result)
             if(res.ok){
                 alert("گزارش جدید با موفقیت ثبت شد")
+            } else{
+                alert(result.error.detail)
             }
     }
 

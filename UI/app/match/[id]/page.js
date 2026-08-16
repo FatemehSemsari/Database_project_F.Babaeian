@@ -66,6 +66,8 @@ export default function Match(){
 
             if(res.ok){
                 alert("بلیط با موفقیت در لیست بلیط های رزرو شده قرار گرفت. برای ثبت نهایی در پروفایل خود نسبت به پرداخت آن اقدام کنید")
+            } else{
+                console.log(result.error)
             }
         }
     }
@@ -85,13 +87,19 @@ export default function Match(){
             ...prev,[ticket.ticket_category_id]: Seats
         }))
     };  
+    const datetime = match?.[0]?.event_datetime;
 
+const [date, fullTime] = datetime
+    ? datetime.split("T")
+    : ["", ""];
 
+const time = fullTime ? fullTime.slice(0, 5) : "";
+    
     return (
         match && 
         <div className=" min-h-screen mt-30 ">
             <div className="w-full flex flex-row-reverse gap-3 justify-center items-start mt-10">
-                <div className=" text-white text-right bg-blue-950 w-7/12 p-5 rounded-xl ">
+                <div className=" text-white text-right shadow-2xl bg-blue-950 w-7/12 p-5 rounded-xl ">
                     <div>
                         <Image alt="" className=" w-9/12 m-auto" src={stadium} />
                     </div>
@@ -103,7 +111,7 @@ export default function Match(){
                             
                              const sectionColors = {
                                 "VIP": "#FFD700",
-                                "Normal": "#52D15C",
+                                "Regular": "#3B82F6",
                                 "Economy": "#3B82F6",
                                 "Premium": "#A855F7",
                             };
@@ -183,13 +191,13 @@ export default function Match(){
                             <li>
                                 <div  className="text-sm flex flex-row-reverse items-center justify-between p-3">
                                     <h3>تاریخ</h3>
-                                    <h3>{match[0].event_datetime}</h3>
+                                    <h3>{date}</h3>
                                 </div>
                             </li>
                             <li>
                                 <div  className="text-sm flex flex-row-reverse items-center justify-between p-3">
                                     <h3>ساعت شروع</h3>
-                                    <h3>{match[0].event_datetime}</h3>
+                                    <h3>{time}</h3>
                                 </div>
                             </li>
                             <li>

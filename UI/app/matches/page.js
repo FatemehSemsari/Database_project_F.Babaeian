@@ -200,8 +200,15 @@ export default function Matches(){
             <SearchFillter searchHandler={searchHandler}></SearchFillter>
             <div className="mt-5 w-full flex flex-wrap justify-center items-center">
                 {data.map((eventTicket) => {
+                    const datetime = eventTicket?.[0]?.event_datetime;
+
+const [date, fullTime] = datetime
+    ? datetime.split("T")
+    : ["", ""];
+
+const time = fullTime ? fullTime.slice(0, 5) : "";
                 return <MatchCard clickHandler={clickHandler} eventTicket={eventTicket}  key={eventTicket[0].event_id} sport_name={eventTicket[0].sport_name} 
-                venue_name={eventTicket[0].venue_name} away_team_name={eventTicket[0].away_team_name} away_team_logo={eventTicket[0].away_team_logo} home_team_name={eventTicket[0].home_team_name} home_team_logo={eventTicket[0].home_team_logo} event_date_time={eventTicket[0].event_datetime} 
+                venue_name={eventTicket[0].venue_name} away_team_name={eventTicket[0].away_team_name} away_team_logo={eventTicket[0].away_team_logo} home_team_name={eventTicket[0].home_team_name} home_team_logo={eventTicket[0].home_team_logo} date={date} time={time} 
                 price={Math.min(...eventTicket.map(ticket => ticket.current_price))}></MatchCard>
             })}
             </div>

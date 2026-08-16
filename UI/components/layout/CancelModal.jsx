@@ -27,7 +27,7 @@ export default function CancelModal({closeModal,info}){
     return(
     <div className=" wrapper fixed inset-0 z-[100] flex justify-center items-center">
         <div  onClick={closeModal} className="absolute min-h-screen inset-0 bg-black/80" />
-        <div className=" h-auto w-auto bg-white rounded-xl z-[150] p-10">
+        <div dir="rtl" className="flex flex-col gap-2 justify-between items-center h-auto w-auto bg-white rounded-xl z-[150] p-10">
             <div dir="rtl" className=" flex flex-row">
             <h1>:مبلغ خرید</h1>
             <h3>{info.purchase_price} تومان</h3>
@@ -44,7 +44,7 @@ export default function CancelModal({closeModal,info}){
             <h1>: درصد استرداد</h1>
             <h3>{info.penalty_amount}</h3>
         </div>
-        <button onClick={CancelHandler}>تایید کنسلی</button>
+        <button className="bg-[#10243D] text-white p-3 rounded-xl mt-5" onClick={CancelHandler}>تایید کنسلی</button>
         </div>
         
     </div> 

@@ -1,3 +1,5 @@
+import { Elsie_Swash_Caps } from "next/font/google"
+
 export default function CheckoutModal({closeModal,id}){
 
     const payHandler = async()=>{
@@ -22,6 +24,8 @@ export default function CheckoutModal({closeModal,id}){
 
             if(res.ok){
                 alert("پرداخت با موفقیت انجام شد")
+            } else{
+               alert(result.error.detail)
             }
     }
 
