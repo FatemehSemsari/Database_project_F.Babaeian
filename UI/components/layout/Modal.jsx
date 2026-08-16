@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 
-export default function Modal({modal, showModal, closeModal}){
+export default function Modal({modal, showModal, closeModal, login}){
 
   const checkRegex = ()=>{
     const phoneRegex = /^09\d{9}$/;
@@ -15,13 +15,14 @@ export default function Modal({modal, showModal, closeModal}){
   }
   
     const loginHandler =async ()=>{
-      if(!checkRegex){
+      if(!checkRegex()){
         alert("(شماره موبایل و یا ایمیل معتبر وارد کنید.")
         return
       }
    
+      console.log(loginOtpRef.current.value)
         const res = await fetch(
-          "",
+          "http://127.0.0.1:8000/api/accounts/login/",
           {
           method: "POST",
            headers: {
@@ -30,17 +31,37 @@ export default function Modal({modal, showModal, closeModal}){
            body : JSON.stringify({
               identifier:emailRef.current.value,
                password:passRef.current.value,
-               otp_code: otpRef.current.valyue
+               otp_code: loginOtpRef.current.value
            })
     })
-      alert(res)
 
-      sessionStorage.setItem("access_token", res.data.access)
+    const result = await res.json();
+
+    if(res.ok){
+      alert("باموفقیت وارد شدید.")
+      console.log(JSON.stringify(result, null, 2))
+      sessionStorage.setItem("access_token", result.data.access_token)
+      sessionStorage.setItem("role", result.data.user.role)
+      console.log(sessionStorage.getItem("access_token"))
+      login()
+      closeModal()
+    }
+    else{
+  
+    console.log(JSON.stringify(result, null, 2))
+    console.log("FULL RESPONSE:", result);
+    alert(JSON.stringify(result.errors, null, 2))
+    }
+      emailRef.current.value=""
+      loginOtpRef.current.value=""
+      passRef.current.value=""
+
+     
   }
 
     const signupHandler = async()=>{
       const phoneRegex = /^09\d{9}$/;
-      if(!checkRegex){
+      if(!checkRegex()){
         alert("(شماره موبایل و یا ایمیل معتبر وارد کنید.")
         return
       }
@@ -53,7 +74,7 @@ export default function Modal({modal, showModal, closeModal}){
           last_name: name_result[1],
           phone: emailRef.current.value,
           password: passRef.current.value,
-          otp_code: otpRef.current.value  
+          otp_code: signupOtpRef.current.value  
         }
       } else {
           data = {
@@ -61,12 +82,12 @@ export default function Modal({modal, showModal, closeModal}){
           last_name: name_result[1],
           email: emailRef.current.value,
           password: passRef.current.value,
-          otp_code: otpRef.current.value  
+          otp_code: signupOtpRef.current.value  
         }
       }
 
       const res = await fetch(
-          "",
+          "http://127.0.0.1:8000/api/accounts/signup/",
           {
           method: "POST",
            headers: {
@@ -74,14 +95,36 @@ export default function Modal({modal, showModal, closeModal}){
            }, 
            body : JSON.stringify(data)
     })
-      alert(res)
+     const result = await res.json();
+     if(res.ok){
+      alert("حساب کاربری با موفقیت ساخته شد.")
+     }
+     else{
+      alert(result.errors)
+     }
+      console.log("STATUS:", res.status);
+console.log("ERRORS:", result.errors);
+console.log("FULL RESPONSE:", result);
+      
+
+      nameRef.current.value=""
+      emailRef.current.value=""
+      signupOtpRef.current.value=""
+      passRef.current.value=""
+
+
     }
 
     const signupotpHandler=async ()=>{
-      if(!checkRegex){
+      if(!checkRegex()){
         alert("(شماره موبایل و یا ایمیل معتبر وارد کنید.")
         return
       }
+      if(passRef.current.value.length < 8){
+         alert("رمز عبور باید حداقل دارای 8 کاراکتر باشد")
+        return
+      }
+      const phoneRegex = /^09\d{9}$/;
       let data
        if (phoneRegex.test(emailRef.current.value)){
          data = { 
@@ -94,7 +137,8 @@ export default function Modal({modal, showModal, closeModal}){
       }
 
       const res = await fetch(
-          "",
+        
+          "http://127.0.0.1:8000/api/accounts/signup/otp/request/",
           {
           method: "POST",
            headers: {
@@ -102,17 +146,25 @@ export default function Modal({modal, showModal, closeModal}){
            }, 
            body : JSON.stringify(data)
     })
-      alert(res)
+      const result = await res.json();
+      console.log("STATUS:", res.status);
+console.log("ERRORS:", result.errors);
+console.log("FULL RESPONSE:", result);
+      alert(result.data.otp_code_for_test)
     }
     
 
     const loginotpHandler=async ()=>{
-      if(!checkRegex){
-        alert("(شماره موبایل و یا ایمیل معتبر وارد کنید.")
+      if(!checkRegex()){
+        alert("شماره موبایل و یا ایمیل معتبر وارد کنید.")
+        return
+      }
+      if(passRef.current.value.length < 8){
+         alert("رمز عبور باید حداقل دارای 8 کاراکتر باشد")
         return
       }
       const res = await fetch(
-          "",
+          "http://127.0.0.1:8000/api/accounts/login/otp/request/",
           {
           method: "POST",
            headers: {
@@ -123,14 +175,25 @@ export default function Modal({modal, showModal, closeModal}){
               password:passRef.current.value
            })
     })
-      alert(res)
+      const result = await res.json();
+      
+      if(res.ok){
+        alert(result.data.otp_code_for_test)
+      } else{
+        alert(result.detail)
+      }
+      console.log("STATUS:", res.status);
+      console.log("ERRORS:", result.errors);
+      console.log("FULL RESPONSE:", result);
+      
       
     }
 
    const emailRef= useRef()
    const nameRef= useRef()
    const passRef= useRef()
-   const otpRef= useRef()
+   const loginOtpRef= useRef()
+   const signupOtpRef= useRef()
 
   return (
     modal &&
@@ -148,11 +211,11 @@ export default function Modal({modal, showModal, closeModal}){
                   <input  className="flip-card__input" ref={emailRef} name="email" placeholder="ایمیل یا شماره موبایل" type="" />
                   <input className="flip-card__input" ref={passRef} name="password" placeholder="رمز عبور" type="password" />
                   <div className="flex justify-between gap-2 items-center">
-                      <input className=" flip-card__input_code" ref={otpRef} name="password" placeholder="کد ورود" type="" />
-                     <button onClick={signupHandler} className="flip-card__btn_code">درخواست کد</button>
+                      <input className=" flip-card__input_code" ref={loginOtpRef} name="password" placeholder="کد ورود" type="" />
+                     <button onClick={loginotpHandler} className="flip-card__btn_code" type="button">درخواست کد</button>
                   </div>
                   
-                  <button onClick={loginHandler} className="flip-card__btn">ورود</button>
+                  <button onClick={loginHandler} className="flip-card__btn" type="button">ورود</button>
                 </form>
               </div>
               <div className="flip-card__back">
@@ -162,10 +225,10 @@ export default function Modal({modal, showModal, closeModal}){
                   <input className="flip-card__input" name="email" ref={emailRef} placeholder="ایمیل یا شماره موبایل" type="" />
                   <input className="flip-card__input" name="password" ref={passRef} placeholder="رمز عبور" type="password" />
                    <div className="flex justify-between gap-2 items-center">
-                      <input className=" flip-card__input_code" ref={otpRef} name="password" placeholder="کد ورود" type="" />
-                     <button onClick={loginHandler} className="flip-card__btn_code">درخواست کد</button>
+                      <input className=" flip-card__input_code" ref={signupOtpRef} name="password" placeholder="کد ورود" type="" />
+                     <button onClick={signupotpHandler} className="flip-card__btn_code" type="button">درخواست کد</button>
                   </div>
-                  <button onClick={signupHandler} className="flip-card__btn" >ارسال</button>
+                  <button onClick={signupHandler} className="flip-card__btn" type="button">ارسال</button>
                 </form>
               </div>
             </div>

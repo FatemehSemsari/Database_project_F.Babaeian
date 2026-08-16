@@ -15,13 +15,15 @@ export default function UserProfile(){
     const emailOtpRef =useRef() 
 
     const editName =async ()=>{
+        const token = sessionStorage.getItem("access_token")
+        console.log(token)
          const res = await fetch(
-                "",
+                "http://127.0.0.1:8000/api/accounts/profile/",
                {
-                method: "POST",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     first_name: firstNameRef.current.value,
@@ -32,7 +34,11 @@ export default function UserProfile(){
 
             const result = await res.json()
 
-            alert("با موفقیت تغییر یافت.")
+            console.log(result)
+            if(res.ok){
+                 alert("با موفقیت تغییر یافت.")
+            }
+            
     }
 
     const editPass = async()=>{
@@ -41,13 +47,15 @@ export default function UserProfile(){
              return
         }
 
+        const token = sessionStorage.getItem("access_token")
+
          const res = await fetch(
-                "",
+                "http://127.0.0.1:8000/api/accounts/profile/password/change/",
                {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     current_password: passRef.current.value,
@@ -58,22 +66,33 @@ export default function UserProfile(){
             )
 
             const result = await res.json()
+            console.log(result)
+            if(res.ok){
+                 alert("با موفقیت تغییر یافت.")
+                 passRef.current.value=""
+                 newpassRef.current.value=""
+                 confirmpassRef.current.value=""
 
-            alert("با موفقیت تغییر یافت.")
+            } else{
+                alert(result.errors.new_password)
+            }
+           
     }
 
     const editPhone =async()=>{
+        
+        const token = sessionStorage.getItem("access_token")
           if(!phoneOtpRef.current.value){
             alert("لطفا کد otp را وارد کنید.")
             return
         }
         const res = await fetch(
-                "",
+                "http://127.0.0.1:8000/api/accounts/profile/contact-change/confirm/",
                {
-                method: "POST",
+                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     identifier_type: "phone",
@@ -84,22 +103,31 @@ export default function UserProfile(){
             )
 
             const result = await res.json()
+            if(res.ok){
+                 alert("با موفقیت تغییر یافت.")
+                 phoneOtpRef.current.value=""
+                 phoneRef.current.value=""
+                 phonePassRef.current.value=""
 
-            alert("با موفقیت تغییر یافت.")
+            } else{
+                alert(result.errors)
+            }
     }
 
     const editEmail =async()=>{
+        const token = sessionStorage.getItem("access_token")
          if(!emailOtpRef.current.value){
             alert("لطفا کد otp را وارد کنید.")
             return
         }
         const res = await fetch(
-                "",
+
+                "http://127.0.0.1:8000/api/accounts/profile/contact-change/confirm/",
                {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     identifier_type: "email",
@@ -111,22 +139,30 @@ export default function UserProfile(){
 
             const result = await res.json()
 
-            alert("با موفقیت تغییر یافت.")
+              if(res.ok){
+                 alert("با موفقیت تغییر یافت.")
+                 emailOtpRef.current.value=""
+                 emailPassRef.current.value=""
+                 emailOtpRef.current.value=""
+
+            } else{
+                alert(result.errors)
+            }
     }
 
      const phoneOtpReauest =async()=>{
-        
-        if(!phoneRef.current.value || phonePassRef.current.value){
+         const token = sessionStorage.getItem("access_token")
+        if(!phoneRef.current.value || !phonePassRef.current.value){
             alert("لطفا برای درخواست کد ابتدا شماره موبایل و رمز عبور خود را وارد کنید")
             return
         }
         const res = await fetch(
-                "",
+                "http://127.0.0.1:8000/api/accounts/profile/contact-change/otp/request/",
                {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     identifier_type: "phone",
@@ -136,24 +172,28 @@ export default function UserProfile(){
                }
             )
 
-            const result = await res.json()
-
-            alert("otp code is:")
+             const result = await res.json()
+            console.log(result.data.otp_code_for_test)
+            if(res.ok){
+                alert(`otp code is: ${result.data.otp_code_for_test}`)
+            } else{
+                console.log(result)
+            }
     }
 
      const emailOtpReauest =async()=>{
-        
-        if(!emailRef.current.value || emailPassRef.current.value){
-            alert("لطفا برای درخواست کد ابتدا شماره موبایل و رمز عبور خود را وارد کنید")
+         const token = sessionStorage.getItem("access_token")
+        if(!emailRef.current.value || !emailPassRef.current.value){
+            alert("لطفا برای درخواست کد ابتدا ایمیل و رمز عبور خود را وارد کنید")
             return
         }
         const res = await fetch(
-                "",
+                "http://127.0.0.1:8000/api/accounts/profile/contact-change/otp/request/",
                {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     identifier_type: "email",
@@ -163,17 +203,25 @@ export default function UserProfile(){
                }
             )
 
+          
             const result = await res.json()
+            console.log(result.data.otp_code_for_test)
+            if(res.ok){
+                alert(`otp code is: ${result.data.otp_code_for_test}`)
+            } else{
+                console.log(result)
+            }
+            
 
-            alert("otp code is:")
+        
     }
 
    return(
      <div className=" items-end flex flex-col gap-3 mt-25 p-5 w-7/12">
        <div className=" flex flex-col items-end gap-2">
             <h1>ویرایش نام</h1>
-            <input ref={firstNameRef} placeholder="نام و نام خانوداگی" type="text"/>
-            <input ref={lastNameRef} placeholder="نام و نام خانوداگی" type="text"/>
+            <input ref={firstNameRef} placeholder="نام" type="text"/>
+            <input ref={lastNameRef} placeholder=" نام خانوداگی" type="text"/>
             <button onClick={editName}>ویرایش</button>
        </div>
         <div  className=" flex flex-col items-end gap-2">

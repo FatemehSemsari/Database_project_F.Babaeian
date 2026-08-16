@@ -4,10 +4,29 @@ import Modal from "./Modal";
 import Link from "next/link";
 import LogButton from "../ui/Buttons/LogButton";
 import NottifButton from "../ui/Buttons/NottifButton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
+     const [logedin, setlogedin]= useState(false)
+    const [address, setaddress]= useState("")
+    useEffect(()=>{
+        const token = sessionStorage.getItem("access_token")
+        const role = sessionStorage.getItem("role")
 
+        if(role == "support"){
+            setaddress("/profile/supporter/")
+        }
+        else{
+            setaddress("/profile/user/")
+        }
+            if(token){
+                setlogedin(true)
+            }
+            else{
+                setlogedin(false)
+            }
+        
+    },[])
     const showModal = ()=>{
         setModal(true)
     }
@@ -17,12 +36,17 @@ export default function Navbar() {
     }
 
 
+    const logeinAccess = ()=>{
+        setlogedin(true)
+    }
+
+   
     const [modal, setModal]= useState(false)
   return (
   <div>
        <nav className= "bg-[#10243D]  z-50 fixed top-0 rounded-lg rad items-center justify-between flex w-full m-auto  p-2">
         <div className="flex m-auto justify-between gap-3 items-center">
-            <LogButton showModal={showModal}/>
+            {logedin ?  <Link href={address}><svg className="  rounded-full p-2 border-2 w-15" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path className=" fill-white" d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z"/></svg></Link> : <LogButton showModal={showModal}/>}
             <NottifButton/>
         </div>
         <div className="flex text-lg text-amber-50 border-blue-300 m-auto gap-5 justify-center items-center">
@@ -41,7 +65,7 @@ export default function Navbar() {
         </div>
         
     </nav>
-    <Modal modal={modal} closeModal={closeModal} showModal={showModal} />
+    <Modal modal={modal} closeModal={closeModal} showModal={showModal} login={logeinAccess} />
   </div>
   );
 }

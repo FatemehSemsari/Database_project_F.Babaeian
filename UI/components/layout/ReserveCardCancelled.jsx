@@ -1,14 +1,9 @@
-export default function ReserveCardPaied({showModal,refundHandler, seats,ticket_id, away_team_name, home_team_name,venue_name, city_name, total_amount, event_datetime, paid_at, reservation_id}){
+export default function ReserveCardCancelled({seats, payHandler, away_team_name, home_team_name,venue_name, city_name, event_datetime, total_amount, reservation_id, reserved_at, remaining_seconds}){
     
-   
-
-    const showHandler =()=>{
-
-    }
 
     return(
-        <div className=" bg-white rounded-lg w-full p-3 flex flex-col  gap-2">
-            <span className="self-end w-fit p-2 text-[#52D15C] rounded-xl bg-[#E8F7EA]">پرداخت شده</span>
+        <div className=" bg-white w-full rounded-lg p-3 flex flex-col gap-2">
+            <div className=" self-end w-fit p-2 text-[#b42009] rounded-xl bg-[#FEF3C7]">لغو شده</div>
             <div className=" flex flex-row-reverse justify-between items-center">
                 <div>
                      <div className=" flex justify-between items-center">
@@ -31,11 +26,11 @@ export default function ReserveCardPaied({showModal,refundHandler, seats,ticket_
                 <div className="flex flex-col gap-2 p-2">
                     <div>
                         <h1>شماره رزرو</h1>
-                        <h1 className=" font-bold text-[#52D15C]">{reservation_id}</h1>
+                        <h1 className=" font-bold text-[#F59E0B]">{reservation_id}</h1>
                     </div>
                     <div>
-                        <h1>تاریخ پرداخت</h1>
-                        <h1 className=" font-bold ">{paid_at}</h1>
+                        <h1>تاریخ رزرو</h1>
+                        <h1 className=" font-bold ">{reserved_at}</h1>
                     </div>
                 </div>
             </div>
@@ -44,32 +39,29 @@ export default function ReserveCardPaied({showModal,refundHandler, seats,ticket_
                 seats.map((seat)=>{
                     return <div className=" rounded-lg border-indigo-100 flex flex-row-reverse items-center justify-between p-2">
                 <div>
-                    <h2 className=" text-[#64748B]">مبلغ پرداختی</h2>
-                    <h1 dir="rtl" className=" font-bold">{total_amount} تومان</h1>
+                    <h2 className=" text-gray-300">مبلغ پرداختی</h2>
+                    <h1 dir="rtl" className="text-[#F59E0B] font-bold">{total_amount} تومان</h1>
                 </div>
                 <div className="w-px h-20 opacity-45 bg-blue-950/20"></div>
                 <div>
-                     <h2 className=" text-[#64748B]">صندلی</h2>
+                     <h2 className=" text-gray-300">صندلی</h2>
                     <h1 dir="rtl" className=" font-bold">{seat.seat_number}</h1>
                 </div>
                 <div className="w-px h-20 opacity-45 bg-blue-950/20"></div>
                 <div>
-                     <h2 className=" text-[#64748B]">ردیف</h2>
+                     <h2 className=" text-gray-300">ردیف</h2>
                     <h1 dir="rtl" className=" font-bold">{seat.row_number}</h1>
                 </div>
                 <div className="w-px h-20 opacity-45 bg-blue-950/20"></div>
                 <div>
-                     <h2 className=" text-[#64748B]">جایگاه</h2>
+                     <h2 className=" text-gray-300">جایگاه</h2>
                     <h1 dir="rtl" className=" font-bold">{seat.section_name}</h1>
                 </div>
             </div>
                 })
             }
 
-            <div className="flex gap-2 items-start">
-                <button className=" text-[#52D15C] border-[#52D15C] borser-2 p-3 rounded-lg" onClick={refundHandler}>درخواست استرداد وجه</button>
-                
-            </div>
+           
         </div>
     )
 }

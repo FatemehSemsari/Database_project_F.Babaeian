@@ -12,14 +12,16 @@ export default function SendPage(){
         if(!ticketRef.current.value &&issueRef.current.value ){
             alert("شماره بلیط یا کد رزرو را وارد کنید.")
         }
+        const token = sessionStorage.getItem("access_token")
 
         const res = await fetch(
-                "",
+             
+                "http://127.0.0.1:8000/api/reports/",
                {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     ticket_id: ticketRef.current.value,
@@ -30,8 +32,10 @@ export default function SendPage(){
             )
 
             const result = await res.json()
-
-            alert("گزارش جدید با موفقیت ثبت شد")
+            console.log(result)
+            if(res.ok){
+                alert("گزارش جدید با موفقیت ثبت شد")
+            }
     }
 
     return(

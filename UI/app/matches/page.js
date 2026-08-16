@@ -7,25 +7,22 @@ import SearchFillter from "@/components/layout/SearchFillter";
 import { mockMatches } from "@/data/mockData";
 
 
-const groupEvent = Object.values(
 
-    //fetch
-    mockMatches.reduce((groups, data) =>{
-        const eventId = data.event_id
 
-        if(!groups[eventId]){
-            groups[eventId] = []
-        }
-        groups[eventId].push(data)
 
-        return groups
-    }, {})
 
-);
 
-    
+export default function Matches(){
 
-  const searchHandler = (sport , city, venue, dateto, datefrom, timeto, timefrom, name)=>{
+
+
+    const [filltered , setFilltered] = useState(false)
+    const [data , setData] = useState()
+    const router = useRouter() 
+
+        
+
+  const searchHandler = (sport , city, venue, dateto, datefrom, name)=>{
         setFilltered(true)
 
         const filters = {
@@ -36,27 +33,90 @@ const groupEvent = Object.values(
             date_from: datefrom,
             date_to : dateto
         }
+         const params = new URLSearchParams();
 
-        //fetch
+    if (sport && sport !== "-1") {
+        params.append("sport_id", sport);
+    }
+
+    if (name && name !== "-1") {
+        params.append("team_id", name);
+    }
+
+    if (city && city !== "-1") {
+        params.append("city_id", city);
+    }
+
+    if (venue && venue !== "-1") {
+        params.append("venue_id", venue);
+    }
+
+    if (datefrom) {
+        params.append("date_from", datefrom);
+    }
+
+    if (dateto) {
+        params.append("date_to", dateto);
     }
 
 
+          const getTeams = async() =>{
+           const res =  await fetch(`http://127.0.0.1:8000/api/tickets/search/?${params.toString()}`)
+           const datas = await res.json()
+           console.log(datas)
 
-export default function Matches(){
 
-    const [filltered , setFilltered] = useState(false)
-    const [data , setData] = useState()
-    const router = useRouter() 
+            const groupEvent = Object.values(
+        datas.data.tickets.reduce((groups, data) =>{
+        const eventId = data.event_id
+
+            if(!groups[eventId]){
+                groups[eventId] = []
+            }
+            groups[eventId].push(data)
+
+            return groups
+        }, {})
+
+        );
+
+      
+
+        setData(groupEvent)
+        
+    }
+      getTeams()
+}
+
 
 
     useEffect(() => {
-        // getTeams().then(data =>{
-        //   setTeams(data)
-        //   console.log(data)
-        //   setLoaded(true);
-        // });
+
+        const getTeams = async() =>{
+           const res =  await fetch("http://127.0.0.1:8000/api/tickets/search/")
+           const datas = await res.json()
+           console.log(datas)
+            const groupEvent = Object.values(
+        datas.data.tickets.reduce((groups, data) =>{
+        const eventId = data.event_id
+
+            if(!groups[eventId]){
+                groups[eventId] = []
+            }
+            groups[eventId].push(data)
+
+            return groups
+        }, {})
+
+        );
 
         setData(groupEvent)
+        }
+
+        
+        getTeams()
+        console.log(data)
+       
       }, []);
 
 
@@ -69,10 +129,10 @@ export default function Matches(){
     }
 
     return(
-        <div className="min-h-screen m-auto w-11/12">
-            <SearchFillter></SearchFillter>
+        data && <div className="min-h-screen m-auto w-11/12">
+            <SearchFillter searchHandler={searchHandler}></SearchFillter>
             <div className="mt-5 w-full flex flex-wrap justify-center items-center">
-                {groupEvent.map((eventTicket) => {
+                {data.map((eventTicket) => {
                 return <MatchCard clickHandler={clickHandler} eventTicket={eventTicket}  key={eventTicket[0].event_id} sport_name={eventTicket[0].sport_name} 
                 venue_name={eventTicket[0].venue_name} away_team_name={eventTicket[0].away_team_name} away_team_logo={eventTicket[0].away_team_logo} home_team_name={eventTicket[0].home_team_name} home_team_logo={eventTicket[0].home_team_logo} event_date_time={eventTicket[0].event_datetime} 
                 price={Math.min(...eventTicket.map(ticket => ticket.current_price))}></MatchCard>

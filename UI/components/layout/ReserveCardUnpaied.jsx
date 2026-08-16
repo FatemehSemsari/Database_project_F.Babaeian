@@ -1,9 +1,5 @@
-export default function ReserveCardUnPaied({seats, away_team_name, home_team_name,venue_name, city_name, event_datetime, total_amount, reservation_id, reserved_at, remaining_seconds}){
+export default function ReserveCardUnPaied({seats, payHandler, away_team_name, home_team_name,venue_name, city_name, event_datetime, total_amount, reservation_id, reserved_at, remaining_seconds}){
     
-    const payHandler =()=>{
-
-    }
-
 
     return(
         <div className=" bg-white w-full rounded-lg p-3 flex flex-col gap-2">
@@ -66,7 +62,7 @@ export default function ReserveCardUnPaied({seats, away_team_name, home_team_nam
             }
 
             <div className="flex items-center flex-row-reverse justify-between">
-                <button className=" text-white bg-[#F59E0B] p-3 rounded-lg" onClick={payHandler}>پرداخت و تکیمل خرید</button>
+                <button className=" text-white bg-[#F59E0B] p-3 rounded-lg" onClick={()=>payHandler(reservation_id)}>پرداخت و تکیمل خرید</button>
                 <div>
                     <div>فرصت باقی مانده برای پرداخت</div>
                 <div className="text-[#F59E0B]" dir="rtl">{remaining_seconds/60}:{remaining_seconds%60} دقیقه</div>

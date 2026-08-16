@@ -9,7 +9,8 @@ import logo2 from "../../../public/8.png"
 export default function Match(){
 
     const [match, setMatch]= useState()
-    const ticketNumRef = useRef([])
+    const [seats, setSeats] = useState([])
+    const ticketNumRef = useRef({})
 
 
     useEffect(()=>{
@@ -21,6 +22,14 @@ export default function Match(){
 
 
     }, [])
+
+    useEffect(()=>{
+        if(!match)
+            return
+        for(let i=0 ; i< match.length ; i++){
+            loadSeats(match[i])
+        }
+    },[match])
 
     const bookHandler = async ()=>{
 
@@ -38,12 +47,12 @@ export default function Match(){
             }
 
             const res = await fetch(
-                "",
+                "http://127.0.0.1:8000/api/reservations/",
                {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     ticket_category_id : match[i].ticket_category_id,
@@ -53,18 +62,29 @@ export default function Match(){
             )
 
             const result = await res.json()
+            console.log(result)
 
-            alert("بلیط با موفقیت در لیست بلیط های رزرو شده قرار گرفت. برای ثبت نهایی در پروفایل خود نسبت به پرداخت آن اقدام کنید")
+            if(res.ok){
+                alert("بلیط با موفقیت در لیست بلیط های رزرو شده قرار گرفت. برای ثبت نهایی در پروفایل خود نسبت به پرداخت آن اقدام کنید")
+            }
         }
     }
 
     const getSeats = async(ticketId)=>{
         //fetch
-        // const response = await fetch()
-        // const result = response.json()
-
-        // return(result.data.seat)
+        const response = await fetch(`http://127.0.0.1:8000/api/reservations/seats/?ticket_category_id=${ticketId}`)
+        const result = await response.json()
+        console.log(result)
+        return(result.data.seats)
     }
+
+    const loadSeats = async (ticket) => {
+    const Seats = await getSeats(ticket.ticket_category_id);
+    console.log(Seats)
+        setSeats((prev)=>({
+            ...prev,[ticket.ticket_category_id]: Seats
+        }))
+    };  
 
 
     return (
@@ -73,7 +93,7 @@ export default function Match(){
             <div className="w-full flex flex-row-reverse gap-3 justify-center items-start mt-10">
                 <div className=" text-white text-right bg-blue-950 w-7/12 p-5 rounded-xl ">
                     <div>
-                        <Image className=" w-9/12 m-auto" src={stadium} />
+                        <Image alt="" className=" w-9/12 m-auto" src={stadium} />
                     </div>
                     <h1 className="mb-3">انتخاب بلیط</h1>
                     <div className=" w-full bg-amber-50 h-0.25 opacity-30 m-auto"></div>
@@ -90,10 +110,10 @@ export default function Match(){
 
                             const color = sectionColors[ticket.section_type_name] || "#fffff"
 
-                            const seats =getSeats(ticket.ticket_category_id)
+                            
 
 
-                            return <li>
+                            return <li key={ticket.ticket_category_id}>
                                     <div  className=" flex flex-row-reverse items-center justify-between p-3">
                                            <div className=" flex flex-row-reverse gap-2 items-center">
                                                 <span className=" w-4 h-4 rounded-full" style={{backgroundColor: color}}></span>
@@ -104,12 +124,17 @@ export default function Match(){
                                         : <h2 className=" text-[#9d2c2c] ">ناموجود</h2>
                                     }
                                     <h2 dir="rtl">{ticket.current_price} تومان </h2>
-                                    <select dir="rtl">
-                                        {
-                                            seats.map((seat)=>{
-                                                return <option  ref={(element)=>{ticketNumRef.current[index]= element}} className=" w-2/12" value={seat.inventory_id}> {seet.seat_numbe}شماره ،{seet.row_number} ردیف</option>
-                                            })
-                                        }
+                                    <select dir="rtl" ref={(element)=>{ticketNumRef.current[index]= element}}>
+                                        <option value=""></option>
+                                         {(seats[ticket.ticket_category_id] || []).map((seat) => (
+                                            <option
+                                                key={seat.inventory_id}
+                                                value={seat.inventory_id}
+                                                dir="rtl"
+                                            >
+                                                ردیف {seat.row_number} ، شماره {seat.seat_number}
+                                            </option>
+                                        ))}
                                     </select>
                                     </div>
                                     <div className=" w-full bg-amber-50 h-0.25 opacity-30 m-auto"></div>
@@ -126,7 +151,7 @@ export default function Match(){
                 <div className=" w-4/12 p-5 flex flex-col justify-between">
                 <div className=" text-right flex w-full m-auto justify-between items-center p-5">
                     <div className="flex flex-col gap-4 justify-center items-center">
-                        <Image className="w-35" src={logo1} />
+                        <Image alt="" className="w-35" src={logo1} />
                         <h1 className=" font-bold text-lg">{match[0].away_team_name}</h1>
                     </div>
                     {/* <div className=" w-/12 flex flex-col gap-3 items-center justify-center">
@@ -141,7 +166,7 @@ export default function Match(){
                         </div>
                     </div> */}
                     <div className="flex flex-col gap-4 justify-center items-center">
-                        <Image className="w-35" src={logo2} />
+                        <Image alt="" className="w-35" src={logo2} />
                         <h1 className=" font-bold text-lg">{match[0].home_team_name}</h1>
                     </div>
                 </div> 

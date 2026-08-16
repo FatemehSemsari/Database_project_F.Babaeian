@@ -15,7 +15,7 @@
 }
 
 body {
-  background: var(--background);
+  background: #F8FAFC;
   color: var(--foreground);
   font-family: var(--font-vazir);
 }
@@ -110,12 +110,12 @@ option{
 }
 
 .wrapper {
-    --input-focus: #2d8cf0;
-    --font-color: #323232;
+    --input-focus: #52D15C;
+    --font-color: #10243D;
     --font-color-sub: #666;
     --bg-color: #fff;
     --bg-color-alt: #666;
-    --main-color: #323232;
+    --main-color: #52D15C;
   }
   /* switch card */
   .switch {
@@ -132,23 +132,23 @@ option{
 
   .card-side::before {
     position: absolute;
-    content: 'Log in';
+    content: 'ورود';
     left: -70px;
     top: 0;
     width: 100px;
     text-decoration: underline;
-    color: var(--font-color);
+    color: var(--main-color);
     font-weight: 600;
   }
 
   .card-side::after {
     position: absolute;
-    content: 'Sign up';
+    content: 'ثبت نام';
     left: 70px;
     top: 0;
     width: 100px;
     text-decoration: none;
-    color: var(--font-color);
+    color: var(--main-color);
     font-weight: 600;
   }
 
@@ -239,7 +239,7 @@ option{
     justify-content: center;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    background: lightgrey;
+    background: #10243D;
     gap: 20px;
     border-radius: 5px;
     border: 2px solid var(--main-color);

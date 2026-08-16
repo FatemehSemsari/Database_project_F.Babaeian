@@ -6,25 +6,30 @@ import ModifyModal from "@/components/layout/ModifyModal"
 export default function tickets() {
 
      useEffect(()=>{
-        // const getDetails = async ()=>{
+        const getDetails = async ()=>{
     
-        //     // const token = 
-        //     const response = await fetch("", {
-        //     headers: {
-        //     Authorization: `Bearer ${token}`
-        // }
-        // });
+            const token = sessionStorage.getItem("access_token"); 
+            const response = await fetch("http://127.0.0.1:8000/api/support/reservations/", {
+            headers: {
+            Authorization: `Bearer ${token}`
+        }
+        });
         
-        //     const result = await response.json()
+            const result = await response.json()
     
-        //     return result.data.active
+            if(res.ok){
+                setTickets(result.data.reservations)
+            } else{
+                console.log(result)
+            }
     
-        // }
-    
-        setTickets(mockSupportReservations)
+        }
+        getDetails()
+        
     
     },[])
     const [tickets, setTickets] = useState()
+    const [id, setId] = useState()
     const [modal, setModal] = useState(false)
     const resRef= useRef()
     const reserveMap = {
@@ -40,13 +45,16 @@ export default function tickets() {
         cancelled:"لغو شده"
     }
 
-    const approvHandler = async ()=>{
+    const approvHandler = async (id)=>{
         const token = sessionStorage.getItem("access_token")
 
         const res = await fetch(
-         ``, {
+         `http://127.0.0.1:8000/api/support/reservations/${id}/`, {
             method: "PATCH",
-            headers: {},
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
             body: JSON.stringify({
                 action: "approve",
                 note: "رزرو توسط پشتیبان تایید شد."
@@ -55,15 +63,23 @@ export default function tickets() {
         )
 
         const result = await res.json()
+        if(res.ok){
+            alert("با موفقیت انجام شد.")
+        } else{
+            console.log(result)
+        }
     }
 
-    const cancellHandler = async ()=>{
+    const cancellHandler = async (id)=>{
         const token = sessionStorage.getItem("access_token")
 
         const res = await fetch(
-         ``, {
+         `http://127.0.0.1:8000/api/support/reservations/${id}/`, {
             method: "PATCH",
-            headers: {},
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
             body: JSON.stringify({
                 action: "cancel",
                 note: "رزرو توسط پشتیبان لغو شد."
@@ -72,24 +88,34 @@ export default function tickets() {
         )
 
         const result = await res.json()
+        if(res.ok){
+            alert("با موفقیت انجام شد.")
+        } else{
+            console.log(result)
+        }
     }
 
-    const showModal = async ()=>{
+    const showModal = async (id)=>{
+       setId(id)
         setModal(true)
     }
 
     const closeModal = async ()=>{
         setModal(false)
+        
     }
 
     const modifyHandler = async (newTime)=>{
-
+        
         const token = sessionStorage.getItem("access_token")
 
         const res = await fetch(
-         ``, {
+         `http://127.0.0.1:8000/api/support/reservations/${id}/`, {
             method: "PATCH",
-            headers: {},
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
             body: JSON.stringify({
                 action: "modify",
                 expires_at: newTime,
@@ -100,6 +126,11 @@ export default function tickets() {
 
         const result = await res.json()
         setModal(false)
+        if(res.ok){
+            alert("با موفقیت انجام شد.")
+        } else{
+            console.log(result)
+        }
     }
 
     
@@ -124,7 +155,7 @@ export default function tickets() {
 
                                 <div dir="rtl" className="flex flex-col gap-2  justify-center items-start">
                                     <h1>وضعیت بررسی:</h1>
-                                    {ticket.support_reviewed_at ? <div><h1>{resMap[ticket.support_review_status]}</h1> <h3></h3>{ticket.support_note}</div> : <div><button onClick={approvHandler}>تایید </button>  <button onClick={showModal}>اصلاح</button> <button onClick={cancellHandler}>لغو</button></div>}
+                                    {ticket.support_reviewed_at ? <div><h1>{resMap[ticket.support_review_status]}</h1> <h3></h3>{ticket.support_note}</div> : <div><button onClick={()=>{approvHandler(ticket.reservation_id)}}>تایید </button>  <button onClick={()=>showModal(ticket.reservation_id)}>اصلاح</button> <button onClick={()=>{cancellHandler(ticket.reservation_id)}}>لغو</button></div>}
                                 </div>
                                
                         </div>

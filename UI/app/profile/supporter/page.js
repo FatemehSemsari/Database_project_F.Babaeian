@@ -1,6 +1,9 @@
 "use client"
 import { useState,useEffect,useRef } from "react"
 
+
+
+
 export default function SupporterProfile(){
 
     const mockData= [
@@ -42,41 +45,47 @@ export default function SupporterProfile(){
         };
    
     useEffect(()=>{
-        // const getDetails = async ()=>{
+        const getDetails = async ()=>{
     
-        //     // const token = 
-        //     const response = await fetch("", {
-        //     headers: {
-        //     Authorization: `Bearer ${token}`
-        // }
-        // });
+            const token = sessionStorage.getItem("access_token");
+            const response = await fetch("http://127.0.0.1:8000/api/support/reports/", {
+            headers: {
+            Authorization: `Bearer ${token}`
+        }
+        });
         
-        //     const result = await response.json()
+            const result = await response.json()
     
-        //     return result.data.active
+            setReports(result.data.reports)
     
-        // }
+        }
+        getDetails()
     
-        setReports(mockData)
+        
     
     },[])
     const [reports, setReports] = useState()
-    const resRef= useRef()
+    const resRef= useRef("")
 
-    const sendResponse = async ()=>{
+    const sendResponse = async (report_id)=>{
         const token = sessionStorage.getItem("access_token")
 
         const res = await fetch(
-         ``, {
+         `http://127.0.0.1:8000/api/support/reports/${report_id}/`, {
             method: "PATCH",
-            headers: {},
+             headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+             },
             body: JSON.stringify({
                 status: "resolved",
                 support_response: resRef.current.value
             })
          }
         )
-
+        if(res.ok){
+            alert("پاسخ با موفقیت ثبت شد.")
+        }
         const result = await res.json()
     }
 
@@ -98,7 +107,7 @@ export default function SupporterProfile(){
                                 <div  dir="rtl" className="flex flex-col gap-2  justify-center items-start">
                                     <h1>پاسخ:</h1>
                                     {
-                                        report.support_response ? <p>{report.support_response}</p> : <div><input className=" h-15" ref={resRef} placeholder="متن پاسخ" /> <button onClick={sendResponse}>ثبت پاسخ</button> </div>
+                                        report.support_response ? <p>{report.support_response}</p> : <div><input className=" h-15" ref={resRef} placeholder="متن پاسخ" /> <button onClick={()=>{sendResponse(report.report_id)}}>ثبت پاسخ</button> </div>
                                     }
                                 </div>
                         </div>
