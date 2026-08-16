@@ -10,7 +10,8 @@ from apps.tickets.serializers import (
     TicketDetailSerializer,
     UserBookingSerializer,
     CancellationInfoSerializer,
-    CancelTicketResponseSerializer
+    CancelTicketResponseSerializer,
+    AdvancedTicketSearchQuerySerializer,
 )
 from apps.tickets.services import TicketService
 from rest_framework.decorators import (
@@ -73,6 +74,76 @@ def search_tickets(request):
         },
         status=status.HTTP_200_OK,
     )
+
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def advanced_search_tickets(request):
+    query_serializer = AdvancedTicketSearchQuerySerializer(data=request.query_params)
+    if not query_serializer.is_valid():
+        return Response(
+            {
+                "success": False,
+                "errors": (
+                    query_serializer.errors
+                ),
+            },
+            status=(
+                status.HTTP_400_BAD_REQUEST
+            ),
+        )
+    result = (
+        TicketService
+        .advanced_search_tickets(
+            validated_filters=(
+                query_serializer
+                .validated_data
+            )
+        )
+    )
+    response_serializer = (
+        TicketSearchResultSerializer(
+            result["results"],
+            many=True,
+        )
+    )
+    return Response(
+        {
+            "success": True,
+            "message": (
+                "Advanced ticket search "
+                "completed successfully."
+            ),
+            "data": {
+                "tickets": (
+                    response_serializer.data
+                ),
+                "count": len(
+                    response_serializer.data
+                ),
+                "total": result["total"],
+                "limit": (
+                    query_serializer
+                    .validated_data[
+                        "limit"
+                    ]
+                ),
+                "offset": (
+                    query_serializer
+                    .validated_data[
+                        "offset"
+                    ]
+                ),
+                "engine": (
+                    "elasticsearch"
+                ),
+            },
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
 
 
 @api_view(["GET"])

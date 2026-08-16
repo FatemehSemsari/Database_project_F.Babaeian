@@ -9,6 +9,12 @@ from rest_framework.exceptions import (
     APIException,
     NotFound,
 )
+from apps.tickets.search_api import (
+    search_tickets as elastic_search_tickets,
+)
+from apps.tickets.elastic_sync import (
+    safe_sync_by_ticket,
+)
 
 
 class CancellationConflict(APIException):
@@ -353,6 +359,12 @@ class TicketService:
                 )
             )
 
+            transaction.on_commit(
+                lambda tid=ticket_id:
+                safe_sync_by_ticket(
+                    tid
+                )
+            )
 
             transaction.on_commit(
                 invalidate_ticket_search_cache
@@ -398,3 +410,6 @@ class TicketService:
         }
 
 
+    @staticmethod
+    def advanced_search_tickets(validated_filters):
+        return elastic_search_tickets(validated_filters)

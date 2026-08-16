@@ -10,6 +10,9 @@ from apps.payments.repositories import (
 from apps.tickets.search_cache import (
     invalidate_ticket_search_cache,
 )
+from apps.tickets.elastic_sync import (
+    safe_sync_by_reservation,
+)
 
 
 class PaymentConflict(APIException):
@@ -54,6 +57,12 @@ class PaymentService:
                     PaymentRepository
                     .release_reservation_inventory(
                         reservation_id
+                    )
+                )
+                transaction.on_commit(
+                    lambda rid=reservation_id:
+                    safe_sync_by_reservation(
+                        rid
                     )
                 )
                 transaction.on_commit(

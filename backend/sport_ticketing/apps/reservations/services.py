@@ -15,6 +15,12 @@ from apps.tickets.search_cache import (
     invalidate_ticket_search_cache,
 )
 
+from apps.tickets.elastic_sync import (
+    safe_sync_ticket_category,
+    safe_sync_ticket_categories,
+    get_expired_category_ids,
+)
+
 
 class ReservationService:
     @staticmethod
@@ -29,7 +35,17 @@ class ReservationService:
         expires_at = (timezone.now() + timedelta(minutes=ttl_minutes))
         reserve_key = uuid.uuid4().hex
         with transaction.atomic():
+            expired_category_ids = get_expired_category_ids()
             ReservationRepository.cleanup_expired_reservations()
+            if expired_category_ids:
+                transaction.on_commit(
+                    lambda ids=tuple(
+                        expired_category_ids
+                    ):
+                    safe_sync_ticket_categories(
+                        ids
+                    )
+                )
             inventory = ReservationRepository.get_inventory_for_reservation(inventory_id=inventory_id, ticket_category_id=ticket_category_id)
             if inventory is None:
                 raise NotFound(
@@ -83,6 +99,12 @@ class ReservationService:
                 inventory_id=inventory_id,
             )
             transaction.on_commit(
+                lambda category_id=ticket_category_id:
+                safe_sync_ticket_category(
+                    category_id
+                )
+            )
+            transaction.on_commit(
                 invalidate_ticket_search_cache
             )
 
@@ -117,9 +139,31 @@ class ReservationService:
     @staticmethod
     def get_my_reservations(user_id):
         with transaction.atomic():
+            expired_category_ids = (
+                get_expired_category_ids()
+            )
             ReservationRepository.cleanup_expired_reservations()
-        active_reservations = ReservationRepository.get_active_user_reservations(user_id=user_id)
-        history = ReservationRepository.get_user_reservation_history(user_id=user_id)
+            if expired_category_ids:
+                transaction.on_commit(
+                    lambda ids=tuple(
+                        expired_category_ids
+                    ):
+                    safe_sync_ticket_categories(
+                        ids
+                    )
+                )
+        active_reservations = (
+            ReservationRepository
+            .get_active_user_reservations(
+                user_id=user_id
+            )
+        )
+        history = (
+            ReservationRepository
+            .get_user_reservation_history(
+                user_id=user_id
+            )
+        )
         return {
             "active": active_reservations,
             "history": history,
