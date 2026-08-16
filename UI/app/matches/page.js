@@ -89,6 +89,73 @@ export default function Matches(){
 }
 
 
+  const searchAdvancHandler = (sport , city, venue, dateto, datefrom, name)=>{
+        setFilltered(true)
+
+        const filters = {
+            sport_id :sport,
+            team_id : name,
+            city_id: city,
+            venue_id : venue,
+            date_from: datefrom,
+            date_to : dateto
+        }
+         const params = new URLSearchParams();
+
+    if (sport && sport !== "-1") {
+        params.append("sport_id", sport);
+    }
+
+    if (name && name !== "-1") {
+        params.append("team_id", name);
+    }
+
+    if (city && city !== "-1") {
+        params.append("city_id", city);
+    }
+
+    if (venue && venue !== "-1") {
+        params.append("venue_id", venue);
+    }
+
+    if (datefrom) {
+        params.append("date_from", datefrom);
+    }
+
+    if (dateto) {
+        params.append("date_to", dateto);
+    }
+
+
+          const getTeams = async() =>{
+           const res =  await fetch(`http://127.0.0.1:8000/api/tickets/search/?${params.toString()}`)
+           const datas = await res.json()
+           console.log(datas)
+
+
+            const groupEvent = Object.values(
+        datas.data.tickets.reduce((groups, data) =>{
+        const eventId = data.event_id
+
+            if(!groups[eventId]){
+                groups[eventId] = []
+            }
+            groups[eventId].push(data)
+
+            return groups
+        }, {})
+
+        );
+
+      
+
+        setData(groupEvent)
+        
+    }
+      getTeams()
+}
+
+
 
     useEffect(() => {
 

@@ -4,18 +4,18 @@ import { useRef } from "react";
 
 export default function Modal({modal, showModal, closeModal, login}){
 
-  const checkRegex = ()=>{
+  const checkRegex = (log)=>{
     const phoneRegex = /^09\d{9}$/;
     const emailRegex =  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if(phoneRegex.test(emailRef.current.value) || emailRegex.test(emailRef.current.value)){
+    if(phoneRegex.test(log) || emailRegex.test(log)){
       return true
     }
     return false
   }
   
     const loginHandler =async ()=>{
-      if(!checkRegex()){
+      if(!checkRegex(logemailRef.current.value)){
         alert("(شماره موبایل و یا ایمیل معتبر وارد کنید.")
         return
       }
@@ -29,8 +29,8 @@ export default function Modal({modal, showModal, closeModal, login}){
           "Content-Type": "application/json",
            }, 
            body : JSON.stringify({
-              identifier:emailRef.current.value,
-               password:passRef.current.value,
+              identifier:logemailRef.current.value,
+               password:logpassRef.current.value,
                otp_code: loginOtpRef.current.value
            })
     })
@@ -52,36 +52,36 @@ export default function Modal({modal, showModal, closeModal, login}){
     console.log("FULL RESPONSE:", result);
     alert(JSON.stringify(result.errors, null, 2))
     }
-      emailRef.current.value=""
+      logemailRef.current.value=""
       loginOtpRef.current.value=""
-      passRef.current.value=""
+      logpassRef.current.value=""
 
      
   }
 
     const signupHandler = async()=>{
       const phoneRegex = /^09\d{9}$/;
-      if(!checkRegex()){
+      if(!checkRegex(signemailRef.current.value)){
         alert("(شماره موبایل و یا ایمیل معتبر وارد کنید.")
         return
       }
 
       const name_result = nameRef.current.value.split(/[-\s]/)
       let data
-      if (phoneRegex.test(emailRef.current.value)){
+      if (phoneRegex.test(signemailRef.current.value)){
          data = {
           first_name: name_result[0],
           last_name: name_result[1],
-          phone: emailRef.current.value,
-          password: passRef.current.value,
+          phone: signemailRef.current.value,
+          password: signpassRef.current.value,
           otp_code: signupOtpRef.current.value  
         }
       } else {
           data = {
           first_name: name_result[0],
           last_name: name_result[1],
-          email: emailRef.current.value,
-          password: passRef.current.value,
+          email: signemailRef.current.value,
+          password: signpassRef.current.value,
           otp_code: signupOtpRef.current.value  
         }
       }
@@ -100,7 +100,7 @@ export default function Modal({modal, showModal, closeModal, login}){
       alert("حساب کاربری با موفقیت ساخته شد.")
      }
      else{
-      alert(result.errors)
+      alert(result.errors.detail)
      }
       console.log("STATUS:", res.status);
 console.log("ERRORS:", result.errors);
@@ -108,31 +108,31 @@ console.log("FULL RESPONSE:", result);
       
 
       nameRef.current.value=""
-      emailRef.current.value=""
+      signemailRef.current.value=""
       signupOtpRef.current.value=""
-      passRef.current.value=""
+      signpassRef.current.value=""
 
 
     }
 
     const signupotpHandler=async ()=>{
-      if(!checkRegex()){
+      if(!checkRegex(signemailRef.current.value)){
         alert("(شماره موبایل و یا ایمیل معتبر وارد کنید.")
         return
       }
-      if(passRef.current.value.length < 8){
+      if(signpassRef.current.value.length < 8){
          alert("رمز عبور باید حداقل دارای 8 کاراکتر باشد")
         return
       }
       const phoneRegex = /^09\d{9}$/;
       let data
-       if (phoneRegex.test(emailRef.current.value)){
+       if (phoneRegex.test(signemailRef.current.value)){
          data = { 
-          phone: emailRef.current.value,
+          phone: signemailRef.current.value,
         }
       } else {
           data = {
-          email: emailRef.current.value, 
+          email: signemailRef.current.value, 
         }
       }
 
@@ -150,16 +150,20 @@ console.log("FULL RESPONSE:", result);
       console.log("STATUS:", res.status);
 console.log("ERRORS:", result.errors);
 console.log("FULL RESPONSE:", result);
-      alert(result.data.otp_code_for_test)
+      if(res.ok){
+         alert(result.data.otp_code_for_test)
+      } else{
+        alert(result.detail)
+      }
     }
     
 
     const loginotpHandler=async ()=>{
-      if(!checkRegex()){
+      if(!checkRegex(logemailRef.current.value)){
         alert("شماره موبایل و یا ایمیل معتبر وارد کنید.")
         return
       }
-      if(passRef.current.value.length < 8){
+      if(logpassRef.current.value.length < 8){
          alert("رمز عبور باید حداقل دارای 8 کاراکتر باشد")
         return
       }
@@ -171,8 +175,8 @@ console.log("FULL RESPONSE:", result);
           "Content-Type": "application/json",
            }, 
            body : JSON.stringify({
-              identifier:emailRef.current.value,
-              password:passRef.current.value
+              identifier:logemailRef.current.value,
+              password:logpassRef.current.value
            })
     })
       const result = await res.json();
@@ -189,9 +193,11 @@ console.log("FULL RESPONSE:", result);
       
     }
 
-   const emailRef= useRef()
+   const logemailRef= useRef()
+   const signemailRef= useRef()
    const nameRef= useRef()
-   const passRef= useRef()
+   const logpassRef= useRef()
+   const signpassRef= useRef()
    const loginOtpRef= useRef()
    const signupOtpRef= useRef()
 
@@ -208,8 +214,8 @@ console.log("FULL RESPONSE:", result);
               <div className="flip-card__front">
                 <div className="title">ورود</div>
                 <form className="flip-card__form" action>
-                  <input  className="flip-card__input" ref={emailRef} name="email" placeholder="ایمیل یا شماره موبایل" type="" />
-                  <input className="flip-card__input" ref={passRef} name="password" placeholder="رمز عبور" type="password" />
+                  <input  className="flip-card__input" ref={logemailRef} name="email" placeholder="ایمیل یا شماره موبایل" type="" />
+                  <input className="flip-card__input" ref={logpassRef} name="password" placeholder="رمز عبور" type="password" />
                   <div className="flex justify-between gap-2 items-center">
                       <input className=" flip-card__input_code" ref={loginOtpRef} name="password" placeholder="کد ورود" type="" />
                      <button onClick={loginotpHandler} className="flip-card__btn_code" type="button">درخواست کد</button>
@@ -222,8 +228,8 @@ console.log("FULL RESPONSE:", result);
                 <div className="title">ثبت نام</div>
                 <form className="flip-card__form" action>
                   <input ref={nameRef} className="flip-card__input" placeholder="نام" type="نام" />
-                  <input className="flip-card__input" name="email" ref={emailRef} placeholder="ایمیل یا شماره موبایل" type="" />
-                  <input className="flip-card__input" name="password" ref={passRef} placeholder="رمز عبور" type="password" />
+                  <input className="flip-card__input" name="email" ref={signemailRef} placeholder="ایمیل یا شماره موبایل" type="" />
+                  <input className="flip-card__input" name="password" ref={signpassRef} placeholder="رمز عبور" type="password" />
                    <div className="flex justify-between gap-2 items-center">
                       <input className=" flip-card__input_code" ref={signupOtpRef} name="password" placeholder="کد ورود" type="" />
                      <button onClick={signupotpHandler} className="flip-card__btn_code" type="button">درخواست کد</button>

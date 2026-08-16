@@ -2,7 +2,7 @@ import { mockFilters } from "@/data/mockData"
 import { useState } from "react"
 import { useRef, useEffect } from "react"
 
-export default function SearchFillter({searchHandler}){
+export default function SearchFillter({searchHandler, searchَAdvancedHandler}){
     const datetoRef = useRef(null)
      const timetoRef = useRef(null)
      const datefromRef = useRef(null)
@@ -99,6 +99,10 @@ export default function SearchFillter({searchHandler}){
             
             <button onClick={()=>searchHandler(sportRef.current.value, cityRef.current.value, venueRef.current.value, datetoRef.current.value, datefromRef.current.value,nameRef.current.value)} className=" text-black flex w-30 items-center justify-center bg-[#52D15C] p-3 rounded-lg">
             جستجو
+            <svg className=" w-5 m-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.323 13.383a5.5 5.5 0 1 1 1.06-1.06l2.897 2.897a.75.75 0 1 1-1.06 1.06l-2.897-2.897Zm.677-4.383a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/></svg>
+          </button>
+          <button onClick={()=>searchَAdvancedHandler(sportRef.current.value, cityRef.current.value, venueRef.current.value, datetoRef.current.value, datefromRef.current.value,nameRef.current.value)} className=" text-black flex w-30 items-center justify-center bg-[#52D15C] p-3 rounded-lg">
+             جستجو پیشرفته
             <svg className=" w-5 m-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.323 13.383a5.5 5.5 0 1 1 1.06-1.06l2.897 2.897a.75.75 0 1 1-1.06 1.06l-2.897-2.897Zm.677-4.383a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/></svg>
           </button>
          </div>

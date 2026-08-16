@@ -4,20 +4,20 @@ import { mockReports } from "@/data/mockData"
 export default function Reports(){
 
     useEffect(()=>{
-         // const getDetails = async ()=>{
+         const getDetails = async ()=>{
         
-            //     // const token = 
-            //     const response = await fetch("", {
-            //     headers: {
-            //     Authorization: `Bearer ${token}`
-            // }
-            // });
+               const token = sessionStorage.getItem("access_token")
+                const response = await fetch("http://127.0.0.1:8000/api/reports/", {
+                headers: {
+                Authorization: `Bearer ${token}`
+            }
+            });
             
-            //     const result = await response.json()
+                const result = await response.json()
         
-            //     return result.data.active
+                console.log(result)
         
-            // }
+            }
         
             setReports(mockReports)
         
@@ -59,7 +59,7 @@ export default function Reports(){
                         </div>
                         <div>
                             <h1 className=" font-bold">پاسخ پشتیبان</h1>
-                            <p></p>
+                            <p className="text-[#64748B]"></p>
                         </div>
 
                     </div>

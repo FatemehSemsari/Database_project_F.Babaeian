@@ -1,6 +1,8 @@
 import Image from "next/image";
 import back1 from "../../public/3.jpg"
 import SearchButton from "../ui/Buttons/SearchButton";
+import Link from "next/link";
+
 
 export default function Hero(){
     return(
@@ -11,7 +13,7 @@ export default function Hero(){
         <div className=" absolute inset-0 bg-black/40"></div>
         <div className="flex flex-col justify-center min-h-screen items-center relative z-10">
             <h1 className="mb-7 font-bold text-5xl text-right text-white">بهترین لحظه هارو {<div className=" text-[#52D15C] inline-block"> از نزدیک</div>} تجربه کن</h1>
-            <SearchButton className=""></SearchButton>
+            <Link href={"/matches"}><SearchButton className="" ></SearchButton></Link>
         </div>
         
        </div>

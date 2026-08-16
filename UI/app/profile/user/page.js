@@ -217,41 +217,44 @@ export default function UserProfile(){
     }
 
    return(
-     <div className=" items-end flex flex-col gap-3 mt-25 p-5 w-7/12">
+     <div className="bg-white shadow-2xl items-end flex flex-col gap-4 mt-25 p-5 w-7/12">
        <div className=" flex flex-col items-end gap-2">
-            <h1>ویرایش نام</h1>
-            <input ref={firstNameRef} placeholder="نام" type="text"/>
-            <input ref={lastNameRef} placeholder=" نام خانوداگی" type="text"/>
-            <button onClick={editName}>ویرایش</button>
+            <h1 className=" w-fit border-b-2 p-1 mb-5">ویرایش نام</h1>
+            <input className="p-1  border-b-2"  ref={firstNameRef} placeholder="نام" type="text"/>
+            <input className="p-1  border-b-2"  ref={lastNameRef} placeholder=" نام خانوداگی" type="text"/>
+            <button className=" bg-[#10243D] text-white p-3 rounded-xl mt-5" onClick={editName}>ویرایش</button>
        </div>
+        <div className=" w-full bg-gray-500 h-0.25 opacity-30 m-auto"></div>
         <div  className=" flex flex-col items-end gap-2">
-        <h1>ویرایش رمز عبور</h1>
-            <input ref={passRef} placeholder="رمز عبور فعلی" />
-            <input ref={newpassRef} placeholder="رمز عبور جدید" />
-            <input ref={confirmpassRef} placeholder="تکرار رمز عبور جدید " />
-            <button onClick={editPass}>ویرایش</button>
+        <h1 className=" w-fit border-b-2 p-1 mb-5">ویرایش رمز عبور</h1>
+            <input className="p-1  border-b-2"  ref={passRef} placeholder="رمز عبور فعلی" />
+            <input className="p-1  border-b-2"  ref={newpassRef} placeholder="رمز عبور جدید" />
+            <input className="p-1  border-b-2"  ref={confirmpassRef} placeholder="تکرار رمز عبور جدید " />
+            <button className="bg-[#10243D] text-white p-3 rounded-xl mt-5" onClick={editPass}>ویرایش</button>
        </div>
+       <div className=" w-full bg-gray-500 h-0.25 opacity-30 m-auto"></div>
         <div className=" flex flex-col items-end gap-2">
-        <h1 >افزودن یا ویرایش شماره موبایل </h1>
-            <input ref={phoneRef} placeholder="شماره موبایل" />
-            <input ref={phonePassRef} placeholder="رمز عبور " />
-            <div >
-                <input ref={phoneOtpRef} placeholder="کد ارسال شده" />
-                <button onClick={phoneOtpReauest}>دریافت کد</button>
+        <h1 className=" w-fit border-b-2 p-1 mb-5" >افزودن یا ویرایش شماره موبایل </h1>
+            <input className="p-1  border-b-2"  ref={phoneRef} placeholder="شماره موبایل" />
+            <input className="p-1  border-b-2" ref={phonePassRef} placeholder="رمز عبور " />
+            <div className=" flex items-center justify-between gap-2">
+                <input className="p-1 w-fit  border-b-2"  ref={phoneOtpRef} placeholder="کد ارسال شده" />
+                <button className="bg-[#10243D] text-white p-3 rounded-xl mt-5" onClick={phoneOtpReauest}>دریافت کد</button>
             </div>
-             <button onClick={editPhone}>ویرایش</button>
+             <button className="bg-[#10243D] text-white p-3 rounded-xl mt-5" onClick={editPhone}>ویرایش</button>
 
        </div>
+       <div className=" w-full bg-gray-500 h-0.25 opacity-30 m-auto"></div>
        <div className=" flex flex-col items-end gap-2">
-        <h1 >افزودن یا ویرایش ایمیل  </h1>
-            <input ref={emailRef} placeholder="ایمیل " />
-            <input ref={emailPassRef} placeholder="رمز عبور " />
-            <div>
-                <input ref={emailOtpRef}placeholder="کد ارسال شده" />
-                <button onClick={emailOtpReauest}>دریافت کد</button>
+        <h1 className=" w-fit border-b-2 p-1 mb-5" >افزودن یا ویرایش ایمیل  </h1>
+            <input className="p-1  border-b-2"  ref={emailRef} placeholder="ایمیل " />
+            <input className="p-1  border-b-2"  ref={emailPassRef} placeholder="رمز عبور " />
+            <div className=" flex items-center justify-between gap-2">
+                <input className="p-1 w-fit  border-b-2"  ref={emailOtpRef}placeholder="کد ارسال شده" />
+                <button className="bg-[#10243D] text-white p-3 rounded-xl" onClick={emailOtpReauest}>دریافت کد</button>
             </div>
        </div>
-        <button onClick={editEmail}>ویرایش</button>
+        <button className="bg-[#10243D] text-white p-3 rounded-xl mt-5" onClick={editEmail}>ویرایش</button>
     </div>
    )
 }
