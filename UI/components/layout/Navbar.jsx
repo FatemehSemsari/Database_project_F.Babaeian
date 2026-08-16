@@ -23,6 +23,7 @@ export default function Navbar() {
                 setlogedin(true)
             }
             else{
+                
                 setlogedin(false)
             }
         
@@ -37,7 +38,13 @@ export default function Navbar() {
 
 
     const logeinAccess = ()=>{
+        const role = sessionStorage.getItem("role")
         setlogedin(true)
+        if (role === "support") {
+        setaddress("/profile/supporter/")
+        } else {
+            setaddress("/profile/user/")
+        }
     }
 
    

@@ -65,7 +65,7 @@ export default function ReserveCardUnPaied({seats, payHandler, away_team_name, h
                 <button className=" text-white bg-[#F59E0B] p-3 rounded-lg" onClick={()=>payHandler(reservation_id)}>پرداخت و تکیمل خرید</button>
                 <div>
                     <div>فرصت باقی مانده برای پرداخت</div>
-                <div className="text-[#F59E0B]" dir="rtl">{remaining_seconds/60}:{remaining_seconds%60} دقیقه</div>
+                <div className="text-[#F59E0B]" dir="rtl">{(remaining_seconds/60).toFixed(0)} دقیقه</div>
                 </div>
             </div>
         </div>

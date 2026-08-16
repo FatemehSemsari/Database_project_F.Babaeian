@@ -17,7 +17,7 @@ export default function tickets() {
         
             const result = await response.json()
     
-            if(res.ok){
+            if(response.ok){
                 setTickets(result.data.reservations)
             } else{
                 console.log(result)

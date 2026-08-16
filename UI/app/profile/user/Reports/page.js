@@ -16,10 +16,11 @@ export default function Reports(){
                 const result = await response.json()
         
                 console.log(result)
+                setReports(result.data.reports)
         
             }
-        
-            setReports(mockReports)
+            getDetails()
+            
         
     },[])
 
